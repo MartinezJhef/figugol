@@ -1,0 +1,28 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "figuritas-app-a352b",
+          "appId": "1:801503442154:android:1e1b1732d30828f45ad393",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "figuritas-app-a352b",
+          "configurations": {
+            "android": "1:801503442154:android:1e1b1732d30828f45ad393",
+            "ios": "1:801503442154:ios:49dab54356b1a39e5ad393",
+            "macos": "1:801503442154:ios:49dab54356b1a39e5ad393",
+            "web": "1:801503442154:web:277239f420ed2e2f5ad393",
+            "windows": "1:801503442154:web:4c9faef8b6aaf7625ad393"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,119 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isOfferOwner() {
+      return isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    function isNewOfferOwner() {
+      return isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    function isProposalParticipant() {
+      return isSignedIn() &&
+        (resource.data.fromUserId == request.auth.uid ||
+         resource.data.toUserId == request.auth.uid);
+    }
+
+    function isPaymentOwner() {
+      return isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function isNewPaymentOwner() {
+      return isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    function isReservationUpdate() {
+      return isSignedIn() &&
+        resource.data.status == 'active' &&
+        request.resource.data.status == 'reserved' &&
+        request.resource.data.ownerId == resource.data.ownerId &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'updatedAt']);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.uid == userId;
+      allow update: if isOwner(userId) &&
+        resource.data.uid == userId &&
+        request.resource.data.uid == userId;
+      allow delete: if false;
+
+      match /exchangePoints/{pointId} {
+        allow read, create, update, delete: if isOwner(userId);
+      }
+    }
+
+    match /sticker_collections/{userId} {
+      allow read, create, update, delete: if isOwner(userId);
+
+      match /stickers/{stickerId} {
+        allow read, create, update, delete: if isOwner(userId);
+      }
+    }
+
+    match /tradeOffers/{offerId} {
+      allow read: if isSignedIn() &&
+        (resource.data.status == 'active' ||
+         resource.data.ownerId == request.auth.uid);
+      allow create: if isNewOfferOwner() &&
+        request.resource.data.status == 'active';
+      allow update: if (
+        isOfferOwner() &&
+        request.resource.data.ownerId == resource.data.ownerId &&
+        request.resource.data.status in [
+          'active',
+          'reserved',
+          'completed',
+          'cancelled'
+        ]
+      ) || isReservationUpdate();
+      allow delete: if false;
+    }
+
+    match /tradeProposals/{proposalId} {
+      allow read: if isProposalParticipant();
+      allow create: if isSignedIn() &&
+        request.resource.data.fromUserId == request.auth.uid &&
+        request.resource.data.status == 'pending';
+      allow update: if isProposalParticipant() &&
+        request.resource.data.fromUserId == resource.data.fromUserId &&
+        request.resource.data.toUserId == resource.data.toUserId &&
+        request.resource.data.offerId == resource.data.offerId &&
+        request.resource.data.offeredStickers == resource.data.offeredStickers &&
+        request.resource.data.requestedStickers == resource.data.requestedStickers &&
+        request.resource.data.status in [
+          'pending',
+          'accepted',
+          'rejected',
+          'completed'
+        ];
+      allow delete: if false;
+    }
+
+    match /simulated_payments/{paymentId} {
+      allow read: if isPaymentOwner();
+      allow create: if isNewPaymentOwner() &&
+        request.resource.data.status in [
+          'simulated_success',
+          'simulated_failed',
+          'cancelled'
+        ];
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
