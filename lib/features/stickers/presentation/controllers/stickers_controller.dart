@@ -296,6 +296,19 @@ class StickersController extends ChangeNotifier {
     return 'No se pudo guardar la figurita. Inténtalo nuevamente.';
   }
 
+    /// Returns the list of player (sticker) names for the currently selected country section.
+  List<String> playerNamesForSelectedSection() {
+    final team = selectedSection.team;
+    if (team == null) {
+      // If the 'all' section is selected, return all names.
+      return stickers.map((s) => s.name).toList();
+    }
+    return stickers
+        .where((sticker) => sticker.team == team)
+        .map((sticker) => sticker.name)
+        .toList();
+  }
+
   @override
   void dispose() {
     _subscription?.cancel();
