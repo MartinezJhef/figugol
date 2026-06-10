@@ -106,13 +106,13 @@ class _NearbyEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: AppTheme.grassGreen, size: 58),
+            Icon(icon, color: AppTheme.primaryRed, size: 58),
             const SizedBox(height: 14),
             Text(
               title,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppTheme.ink,
+                color: AppTheme.darkText,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -121,7 +121,7 @@ class _NearbyEmptyState extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF5D6F66),
+                color: const Color(0xFF6B7280),
                 fontWeight: FontWeight.w600,
                 height: 1.35,
               ),
@@ -155,7 +155,7 @@ class _NearbyOfferCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: const Color(0xFFEAF4E2),
+                  backgroundColor: const Color(0xFFF3F4F6),
                   backgroundImage: offer.ownerPhotoUrl == null
                       ? null
                       : NetworkImage(offer.ownerPhotoUrl!),
@@ -168,7 +168,7 @@ class _NearbyOfferCard extends StatelessWidget {
                   child: Text(
                     offer.ownerName,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppTheme.ink,
+                      color: AppTheme.darkText,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -216,7 +216,7 @@ class _OfferMeta extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppTheme.grassGreen),
+        Icon(icon, size: 18, color: AppTheme.primaryRed),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -224,7 +224,7 @@ class _OfferMeta extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: const Color(0xFF5D6F66),
+              color: const Color(0xFF6B7280),
               fontWeight: FontWeight.w700,
             ),
           ),

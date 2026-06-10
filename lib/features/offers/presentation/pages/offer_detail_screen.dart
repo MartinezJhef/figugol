@@ -67,7 +67,7 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
                 Text(
                   'Figuritas que ofrece',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF10231B),
+                    color: const Color(0xFF111827),
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -82,7 +82,7 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
                 Text(
                   'Figuritas que podrías ofrecer',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF10231B),
+                    color: const Color(0xFF111827),
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -208,7 +208,7 @@ class _OwnerHeader extends StatelessWidget {
                     ? '${offer.offeredQuantity} figuritas ofrecidas'
                     : '${offer.offeredQuantity} figuritas · ${distance.toStringAsFixed(1)} km aprox.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFF5D6F66),
+                  color: const Color(0xFF6B7280),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -242,17 +242,17 @@ class _OfferedStickerTile extends StatelessWidget {
             Text(
               'Me falta',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: const Color(0xFF126B3A),
+                color: const Color(0xFFD22630),
                 fontWeight: FontWeight.w900,
               ),
             ),
         ],
       ),
-      tileColor: isMissingForMe ? const Color(0xFFEAF4E2) : Colors.white,
+      tileColor: isMissingForMe ? const Color(0xFFF3F4F6) : Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: isMissingForMe ? AppTheme.grassGreen : AppTheme.line,
+          color: isMissingForMe ? AppTheme.primaryRed : AppTheme.borderLine,
         ),
       ),
     );
@@ -271,14 +271,14 @@ class _InfoBox extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF4D2),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE8C767)),
+        color: const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFBFDBFE)),
       ),
       child: Text(
         message,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: const Color(0xFF10231B),
+          color: const Color(0xFF111827),
           fontWeight: FontWeight.w700,
         ),
       ),

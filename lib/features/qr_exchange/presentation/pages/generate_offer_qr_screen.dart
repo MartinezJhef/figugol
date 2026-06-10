@@ -80,8 +80,8 @@ class _OfferQrCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFD5DDD6)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +90,7 @@ class _OfferQrCard extends StatelessWidget {
             '${offer.offeredQuantity} figuritas ofrecidas',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF10231B),
+              color: const Color(0xFF111827),
             ),
           ),
           const SizedBox(height: 14),

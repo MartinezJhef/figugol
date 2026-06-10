@@ -58,7 +58,7 @@ class _ExchangePointsView extends StatelessWidget {
                   Text(
                     'Elige tus puntos seguros',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: const Color(0xFF10231B),
+                      color: const Color(0xFF111827),
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -66,7 +66,7 @@ class _ExchangePointsView extends StatelessWidget {
                   Text(
                     'Seleccionaste ${controller.selectedCount} de 3 puntos',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: const Color(0xFF126B3A),
+                      color: const Color(0xFFD22630),
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -146,16 +146,16 @@ class _ExchangePointTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(16),
       child: Ink(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: point.isSelected ? const Color(0xFFEAF4E2) : Colors.white,
-          borderRadius: BorderRadius.circular(8),
+          color: point.isSelected ? const Color(0xFFF3F4F6) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: point.isSelected
-                ? const Color(0xFF126B3A)
-                : const Color(0xFFD5DDD6),
+                ? const Color(0xFFD22630)
+                : const Color(0xFFE5E7EB),
             width: point.isSelected ? 2 : 1,
           ),
         ),
@@ -164,8 +164,8 @@ class _ExchangePointTile extends StatelessWidget {
             Icon(
               _iconForType(point.type),
               color: point.isSelected
-                  ? const Color(0xFF126B3A)
-                  : const Color(0xFF5D6F66),
+                  ? const Color(0xFFD22630)
+                  : const Color(0xFF6B7280),
               size: 30,
             ),
             const SizedBox(width: 14),
@@ -176,7 +176,7 @@ class _ExchangePointTile extends StatelessWidget {
                   Text(
                     point.name,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: const Color(0xFF10231B),
+                      color: const Color(0xFF111827),
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -184,7 +184,7 @@ class _ExchangePointTile extends StatelessWidget {
                   Text(
                     point.description,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: const Color(0xFF5D6F66),
+                      color: const Color(0xFF6B7280),
                       height: 1.3,
                     ),
                   ),
@@ -192,7 +192,7 @@ class _ExchangePointTile extends StatelessWidget {
                   Text(
                     '${point.latitude.toStringAsFixed(5)}, ${point.longitude.toStringAsFixed(5)}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF5D6F66),
+                      color: const Color(0xFF6B7280),
                       fontWeight: FontWeight.w700,
                     ),
                   ),

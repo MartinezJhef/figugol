@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/services/connectivity_service.dart';
 import '../../data/models/app_user.dart';
@@ -52,6 +53,19 @@ class AuthController extends ChangeNotifier {
     _setLoading(true);
     try {
       _user = await _repository.signInWithGoogle();
+      _resolveStatus();
+      _errorMessage = null;
+    } catch (error) {
+      _errorMessage = _messageFromError(error);
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> signInAnonymously() async {
+    _setLoading(true);
+    try {
+      _user = await _repository.signInAnonymously();
       _resolveStatus();
       _errorMessage = null;
     } catch (error) {
@@ -121,6 +135,18 @@ class AuthController extends ChangeNotifier {
   }
 
   String _messageFromError(Object error) {
+    if (error is PlatformException) {
+      final code = error.code.toLowerCase();
+      final msg = error.message?.toLowerCase() ?? '';
+      if (code.contains('developer') || 
+          code.contains('10') || 
+          msg.contains('developer') || 
+          msg.contains('credential') || 
+          msg.contains('getcredential')) {
+        return 'Firma SHA-1 de Google no registrada. Por favor ingresa usando el botón de Invitado (Demo).';
+      }
+      return 'Error de plataforma: ${error.message}';
+    }
     if (error is ConnectivityException) {
       return error.message;
     }

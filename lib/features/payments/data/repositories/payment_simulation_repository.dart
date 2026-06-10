@@ -23,6 +23,21 @@ class PaymentSimulationRepository {
     required String userId,
     required TradeOffer offer,
   }) async {
+    if (userId == 'invitado_local') {
+      final quantity = offer.offeredQuantity;
+      return PaymentSimulation(
+        id: 'pay_local_${DateTime.now().millisecondsSinceEpoch}',
+        userId: userId,
+        offerId: offer.id,
+        quantity: quantity,
+        unitPrice: unitPrice,
+        total: quantity * unitPrice,
+        currency: currency,
+        status: PaymentSimulationStatus.simulatedSuccess,
+        createdAt: DateTime.now(),
+      );
+    }
+
     await _connectivityService.ensureInternetConnection(
       action: ImportantNetworkAction.simulatedPayment,
     );

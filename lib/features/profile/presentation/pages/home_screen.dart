@@ -29,14 +29,14 @@ class HomeScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppTheme.fieldGreen,
-              borderRadius: BorderRadius.circular(18),
+              color: AppTheme.secondaryGreen,
+              borderRadius: BorderRadius.circular(24),
             ),
             child: Row(
               children: [
                 const Icon(
                   Icons.sports_soccer_rounded,
-                  color: AppTheme.gold,
+                  color: AppTheme.accentBlue,
                   size: 42,
                 ),
                 const SizedBox(width: 14),
@@ -56,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                       Text(
                         'Revisa tu álbum y encuentra intercambios cerca de tu zona.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFFEAF4E2),
+                          color: const Color(0xFFF3F4F6),
                           fontWeight: FontWeight.w600,
                           height: 1.35,
                         ),
@@ -193,7 +193,7 @@ class _LocationStatusCard extends StatelessWidget {
           ),
         );
       },
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(20),
       child: _StatusCard(
         icon: isReady ? Icons.check_circle_rounded : Icons.info_rounded,
         text: isReady
@@ -223,24 +223,24 @@ class _StatusCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isReady ? const Color(0xFFEAF4E2) : const Color(0xFFFFF4D2),
-        borderRadius: BorderRadius.circular(14),
+        color: isReady ? const Color(0xFFF3F4F6) : const Color(0xFFFFFBEB),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isReady ? const Color(0xFFB7D7C0) : const Color(0xFFE8C767),
+          color: isReady ? const Color(0xFFE5E7EB) : const Color(0xFFFDE68A),
         ),
       ),
       child: Row(
         children: [
           Icon(
             icon,
-            color: isReady ? AppTheme.grassGreen : const Color(0xFF7A5A00),
+            color: isReady ? AppTheme.primaryRed : const Color(0xFFD97706),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.ink,
+                color: AppTheme.darkText,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -287,13 +287,13 @@ class _HomeInfoCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(icon, color: AppTheme.grassGreen),
+            Icon(icon, color: AppTheme.primaryRed),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.ink,
+                  color: AppTheme.darkText,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -340,8 +340,8 @@ class _StatTile extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.line),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.borderLine),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -349,7 +349,7 @@ class _StatTile extends StatelessWidget {
           Text(
             '$value',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppTheme.ink,
+              color: AppTheme.darkText,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -359,7 +359,7 @@ class _StatTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: const Color(0xFF5D6F66),
+              color: const Color(0xFF6B7280),
               fontWeight: FontWeight.w800,
             ),
           ),

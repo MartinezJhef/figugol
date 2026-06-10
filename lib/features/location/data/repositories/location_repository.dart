@@ -22,6 +22,10 @@ class LocationRepository {
     required double latitude,
     required double longitude,
   }) async {
+    if (userId == 'invitado_local') {
+      return;
+    }
+
     await _connectivityService.ensureInternetConnection(
       action: ImportantNetworkAction.confirmLocation,
     );
@@ -45,6 +49,10 @@ class LocationRepository {
     required String userId,
     required List<ExchangePoint> exchangePoints,
   }) async {
+    if (userId == 'invitado_local') {
+      return;
+    }
+
     await _connectivityService.ensureInternetConnection(
       action: ImportantNetworkAction.confirmLocation,
     );

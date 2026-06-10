@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/services/connectivity_service.dart';
@@ -16,7 +17,24 @@ class StickersRepository {
   final FirebaseFirestore _firestore;
   final ConnectivityService _connectivityService;
 
+  static final Map<String, UserSticker> _localMockStickers = {};
+  static Map<String, UserSticker> get localMockStickers => _localMockStickers;
+  static final StreamController<Map<String, UserSticker>> _localStickersController =
+      StreamController<Map<String, UserSticker>>.broadcast();
+
   Stream<Map<String, UserSticker>> watchUserStickers(String userId) {
+    if (userId == 'invitado_local') {
+      final controller = StreamController<Map<String, UserSticker>>();
+      controller.add(Map<String, UserSticker>.from(_localMockStickers));
+      final subscription = _localStickersController.stream.listen((data) {
+        controller.add(data);
+      });
+      controller.onCancel = () {
+        subscription.cancel();
+        controller.close();
+      };
+      return controller.stream;
+    }
     return _userStickers(userId).snapshots().map((snapshot) {
       return {
         for (final document in snapshot.docs)
@@ -26,6 +44,12 @@ class StickersRepository {
   }
 
   Future<void> saveUserSticker(UserSticker userSticker) async {
+    if (userSticker.userId == 'invitado_local') {
+      _localMockStickers[userSticker.stickerId] = userSticker;
+      _localStickersController.add(Map<String, UserSticker>.from(_localMockStickers));
+      return;
+    }
+
     await _connectivityService.ensureInternetConnection(
       action: ImportantNetworkAction.saveStickers,
     );

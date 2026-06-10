@@ -58,14 +58,14 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   'Elige tu nombre para intercambios',
                   style: textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF10231B),
+                    color: const Color(0xFF111827),
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   'Este nombre será visible cuando propongas intercambios de figuritas.',
                   style: textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF5D6F66),
+                    color: const Color(0xFF6B7280),
                     height: 1.35,
                   ),
                 ),

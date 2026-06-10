@@ -23,7 +23,7 @@ class LoginScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF0A3D2D), Color(0xFFF3F8F1)],
+            colors: [Color(0xFF006847), Color(0xFFF9FAFB)],
             stops: [0, 0.72],
           ),
         ),
@@ -49,7 +49,7 @@ class LoginScreen extends StatelessWidget {
                   AppConstants.appSlogan,
                   textAlign: TextAlign.center,
                   style: textTheme.titleMedium?.copyWith(
-                    color: const Color(0xFFEAF4E2),
+                    color: const Color(0xFFF3F4F6),
                     fontWeight: FontWeight.w700,
                     height: 1.3,
                   ),
@@ -75,7 +75,7 @@ class LoginScreen extends StatelessWidget {
                         'Entrá a tu álbum futbolero',
                         textAlign: TextAlign.center,
                         style: textTheme.titleMedium?.copyWith(
-                          color: AppTheme.ink,
+                          color: AppTheme.darkText,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -91,6 +91,19 @@ class LoginScreen extends StatelessWidget {
                             ? null
                             : controller.signInWithGoogle,
                       ),
+                      const SizedBox(height: 12),
+                      FigugolActionButton(
+                        label: controller.isLoading
+                            ? 'Ingresando...'
+                            : 'Ingresar como Invitado (Demo)',
+                        icon: controller.isLoading
+                            ? Icons.hourglass_top_rounded
+                            : Icons.account_circle_rounded,
+                        style: FigugolActionButtonStyle.secondary,
+                        onPressed: controller.isLoading
+                            ? null
+                            : controller.signInAnonymously,
+                      ),
                     ],
                   ),
                 ),
@@ -99,7 +112,7 @@ class LoginScreen extends StatelessWidget {
                   'Colecciona, encuentra e intercambia figuritas de forma simple.',
                   textAlign: TextAlign.center,
                   style: textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF375347),
+                    color: const Color(0xFF4B5563),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -138,9 +151,9 @@ class _FootballBadge extends StatelessWidget {
       width: 128,
       height: 128,
       decoration: BoxDecoration(
-        color: AppTheme.grassGreen,
+        color: AppTheme.primaryRed,
         shape: BoxShape.circle,
-        border: Border.all(color: AppTheme.gold, width: 5),
+        border: Border.all(color: AppTheme.accentBlue, width: 5),
         boxShadow: const [
           BoxShadow(
             color: Color(0x44000000),

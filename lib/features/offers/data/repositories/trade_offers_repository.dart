@@ -6,6 +6,7 @@ import '../../../auth/data/models/app_user.dart';
 import '../../../location/data/models/exchange_point.dart';
 import '../../../stickers/data/models/sticker.dart';
 import '../../../stickers/data/models/user_sticker.dart';
+import '../../../stickers/data/repositories/stickers_repository.dart';
 import '../../../stickers/data/sources/demo_sticker_catalog.dart';
 import '../../presentation/controllers/trade_cart_controller.dart';
 import '../models/trade_offer.dart';
@@ -24,7 +25,146 @@ class TradeOffersRepository {
 
   static const maximumVisibleDistanceKm = 100.0;
 
+  static final List<TradeOffer> _localMockOffers = [
+    TradeOffer(
+      id: 'offer_mock_1',
+      ownerId: 'owner_mock_1',
+      ownerName: 'Juan Pérez',
+      ownerPhotoUrl: null,
+      stickersOffered: [
+        TradeOfferSticker(
+          sticker: demoStickerCatalog[0],
+          quantity: 2,
+        ),
+        TradeOfferSticker(
+          sticker: demoStickerCatalog[1],
+          quantity: 1,
+        ),
+      ],
+      missingStickers: [
+        demoStickerCatalog[2],
+      ],
+      exchangePoints: [
+        ExchangePoint(
+          id: 'pt_1',
+          name: 'Centro de Intercambio Norte',
+          latitude: 0,
+          longitude: 0,
+          description: 'Frente a la boletería',
+          type: ExchangePointType.other,
+          isSelected: true,
+        ),
+        ExchangePoint(
+          id: 'pt_2',
+          name: 'Punto Central Estadio',
+          latitude: 0,
+          longitude: 0,
+          description: 'Puerta de entrada principal',
+          type: ExchangePointType.other,
+          isSelected: true,
+        ),
+        ExchangePoint(
+          id: 'pt_3',
+          name: 'Intercambio Plaza Sur',
+          latitude: 0,
+          longitude: 0,
+          description: 'Patio de comidas central',
+          type: ExchangePointType.other,
+          isSelected: true,
+        ),
+      ],
+      latitude: -12.046374,
+      longitude: -77.042793,
+      zoneHash: 'zone_0_0',
+      status: TradeOfferStatus.active,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    TradeOffer(
+      id: 'offer_mock_2',
+      ownerId: 'owner_mock_2',
+      ownerName: 'María Rodríguez',
+      ownerPhotoUrl: null,
+      stickersOffered: [
+        TradeOfferSticker(
+          sticker: demoStickerCatalog[2],
+          quantity: 1,
+        ),
+      ],
+      missingStickers: [
+        demoStickerCatalog[0],
+      ],
+      exchangePoints: [
+        ExchangePoint(
+          id: 'pt_1',
+          name: 'Centro de Intercambio Norte',
+          latitude: 0,
+          longitude: 0,
+          description: 'Frente a la boletería',
+          type: ExchangePointType.other,
+          isSelected: true,
+        ),
+        ExchangePoint(
+          id: 'pt_2',
+          name: 'Punto Central Estadio',
+          latitude: 0,
+          longitude: 0,
+          description: 'Puerta de entrada principal',
+          type: ExchangePointType.other,
+          isSelected: true,
+        ),
+        ExchangePoint(
+          id: 'pt_3',
+          name: 'Intercambio Plaza Sur',
+          latitude: 0,
+          longitude: 0,
+          description: 'Patio de comidas central',
+          type: ExchangePointType.other,
+          isSelected: true,
+        ),
+      ],
+      latitude: -12.046374,
+      longitude: -77.042793,
+      zoneHash: 'zone_0_0',
+      status: TradeOfferStatus.active,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+  ];
+
   Future<List<ExchangePoint>> loadUserExchangePoints(String userId) async {
+    if (userId == 'invitado_local') {
+      return [
+        ExchangePoint(
+          id: 'pt_1',
+          name: 'Centro de Intercambio Norte',
+          latitude: 0,
+          longitude: 0,
+          description: 'Frente a la boletería',
+          type: ExchangePointType.other,
+          isSelected: true,
+        ),
+        ExchangePoint(
+          id: 'pt_2',
+          name: 'Punto Central Estadio',
+          latitude: 0,
+          longitude: 0,
+          description: 'Puerta de entrada principal',
+          type: ExchangePointType.other,
+          isSelected: true,
+        ),
+        ExchangePoint(
+          id: 'pt_3',
+          name: 'Intercambio Plaza Sur',
+          latitude: 0,
+          longitude: 0,
+          description: 'Patio de comidas central',
+          type: ExchangePointType.other,
+          isSelected: true,
+        ),
+      ];
+    }
+
     await _connectivityService.ensureInternetConnection(
       action: ImportantNetworkAction.publishOffers,
     );
@@ -45,6 +185,34 @@ class TradeOffersRepository {
     required List<TradeCartItem> cartItems,
     required List<ExchangePoint> exchangePoints,
   }) async {
+    if (user.uid == 'invitado_local') {
+      final now = DateTime.now();
+      final offer = TradeOffer(
+        id: 'offer_local_${now.millisecondsSinceEpoch}',
+        ownerId: user.uid,
+        ownerName: user.exchangeName!,
+        ownerPhotoUrl: user.photoUrl,
+        stickersOffered: cartItems
+            .map(
+              (item) => TradeOfferSticker(
+                sticker: item.sticker,
+                quantity: item.quantity,
+              ),
+            )
+            .toList(),
+        missingStickers: const <Sticker>[],
+        exchangePoints: exchangePoints,
+        latitude: user.location?.latitude ?? 0.0,
+        longitude: user.location?.longitude ?? 0.0,
+        zoneHash: 'zone_0_0',
+        status: TradeOfferStatus.active,
+        createdAt: now,
+        updatedAt: now,
+      );
+      _localMockOffers.add(offer);
+      return;
+    }
+
     await _connectivityService.ensureInternetConnection(
       action: ImportantNetworkAction.publishOffers,
     );
@@ -89,6 +257,10 @@ class TradeOffersRepository {
   }
 
   Stream<List<TradeOffer>> watchNearbyActiveOffers({required AppUser user}) {
+    if (user.uid == 'invitado_local') {
+      return Stream.value(_localMockOffers.where((offer) => offer.ownerId != 'invitado_local').toList());
+    }
+
     final location = user.location;
     if (location == null) {
       return const Stream.empty();
@@ -130,6 +302,10 @@ class TradeOffersRepository {
   }
 
   Stream<List<TradeOffer>> watchMyActiveOffers(String userId) {
+    if (userId == 'invitado_local') {
+      return Stream.value(_localMockOffers.where((offer) => offer.ownerId == 'invitado_local').toList());
+    }
+
     return _firestore
         .collection('tradeOffers')
         .where('ownerId', isEqualTo: userId)
@@ -143,6 +319,10 @@ class TradeOffersRepository {
   }
 
   Future<TradeOffer> loadOfferById(String offerId) async {
+    if (offerId.startsWith('offer_mock_') || offerId.startsWith('offer_local_')) {
+      return _localMockOffers.firstWhere((offer) => offer.id == offerId);
+    }
+
     await _connectivityService.ensureInternetConnection(
       action: ImportantNetworkAction.sendExchange,
     );
@@ -167,6 +347,10 @@ class TradeOffersRepository {
     required List<TradeOfferSticker> offeredStickers,
     required List<TradeOfferSticker> requestedStickers,
   }) async {
+    if (fromUserId == 'invitado_local') {
+      return;
+    }
+
     await _connectivityService.ensureInternetConnection(
       action: ImportantNetworkAction.sendExchange,
     );
@@ -337,6 +521,10 @@ class TradeOffersRepository {
     required String userId,
     required List<TradeCartItem> cartItems,
   }) async {
+    if (userId == 'invitado_local') {
+      return;
+    }
+
     final collectionRef = _firestore
         .collection('sticker_collections')
         .doc(userId)
@@ -355,6 +543,11 @@ class TradeOffersRepository {
   }
 
   Future<Map<String, UserSticker>> _loadUserStickerMap(String userId) async {
+    if (userId == 'invitado_local') {
+      // Retornar directamente la lista local mockeada
+      return StickersRepository.localMockStickers;
+    }
+
     final snapshot = await _firestore
         .collection('sticker_collections')
         .doc(userId)

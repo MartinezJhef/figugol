@@ -1,49 +1,42 @@
 {
   "project_info": {
-    "project_number": "801503442154",
-    "project_id": "figuritas-app-a352b",
-    "storage_bucket": "figuritas-app-a352b.firebasestorage.app"
+    "project_number": "1062528051759",
+    "project_id": "figuapp1",
+    "storage_bucket": "figuapp1.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:801503442154:android:1e1b1732d30828f45ad393",
+        "mobilesdk_app_id": "1:1062528051759:android:10058c429c114a4fb034da",
         "android_client_info": {
           "package_name": "com.example.figugol"
         }
       },
       "oauth_client": [
         {
-          "client_id": "801503442154-pmmoq5eqfro5tg33f49kvr2migjihru3.apps.googleusercontent.com",
+          "client_id": "1062528051759-o8q8ai1biggeep94759og1n1c2us1pig.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.figugol",
-            "certificate_hash": "9381d88fe31686d3de60bd96880ac1aae320fbc6"
+            "certificate_hash": "155180a2e6b1424abb99e9776fbeada0cd65433c"
           }
         },
         {
-          "client_id": "801503442154-21mj9ha7q2o5noq3gqug1ophv3r5sch2.apps.googleusercontent.com",
+          "client_id": "1062528051759-chduosjvchje8cpp3348hnmtniljnqh3.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA9Wyf7Lm5Fhffxs72WjtjRQsUgCMaQamg"
+          "current_key": "AIzaSyCnjxsoHNhdtIkpf0XY60zUrD3yZvjNagA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "801503442154-21mj9ha7q2o5noq3gqug1ophv3r5sch2.apps.googleusercontent.com",
+              "client_id": "1062528051759-chduosjvchje8cpp3348hnmtniljnqh3.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "801503442154-8r6at0vbunsvkf0r9vk5pudp394ddbm1.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.figugol"
-              }
             }
           ]
         }

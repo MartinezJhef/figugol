@@ -19,7 +19,7 @@ class WelcomePage extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xFFF8FAF7), Color(0xFFEAF4E2)],
+              colors: [Color(0xFFF9FAFB), Color(0xFFF3F4F6)],
             ),
           ),
           child: Padding(
@@ -33,7 +33,7 @@ class WelcomePage extends StatelessWidget {
                   AppConstants.appName,
                   textAlign: TextAlign.center,
                   style: textTheme.displaySmall?.copyWith(
-                    color: const Color(0xFF10231B),
+                    color: const Color(0xFF111827),
                     fontWeight: FontWeight.w900,
                     letterSpacing: 0,
                   ),
@@ -43,7 +43,7 @@ class WelcomePage extends StatelessWidget {
                   AppConstants.appSlogan,
                   textAlign: TextAlign.center,
                   style: textTheme.titleMedium?.copyWith(
-                    color: const Color(0xFF375347),
+                    color: const Color(0xFF4B5563),
                     fontWeight: FontWeight.w600,
                     height: 1.3,
                   ),
@@ -66,7 +66,7 @@ class WelcomePage extends StatelessWidget {
                   'Colecciona, encuentra e intercambia de forma simple.',
                   textAlign: TextAlign.center,
                   style: textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF5D6F66),
+                    color: const Color(0xFF6B7280),
                   ),
                 ),
               ],
@@ -121,7 +121,7 @@ class _FootballBadge extends StatelessWidget {
               width: 68,
               height: 8,
               decoration: BoxDecoration(
-                color: const Color(0xFFFFC947),
+                color: const Color(0xFF0A369D),
                 borderRadius: BorderRadius.circular(999),
               ),
             ),

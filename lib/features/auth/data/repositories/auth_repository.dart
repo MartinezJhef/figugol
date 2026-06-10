@@ -37,6 +37,25 @@ class AuthRepository {
     return _loadOrCreateUser(user);
   }
 
+  Future<AppUser> signInAnonymously() async {
+    // Retornar directamente el usuario invitado sin intentar conectarse a Firebase Auth ni Firestore.
+    return AppUser(
+      uid: 'invitado_local',
+      email: 'invitado@figugol.com',
+      displayName: 'Invitado Local',
+      photoUrl: null,
+      exchangeName: 'Invitado Figugol',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      locationConfirmed: true,
+      selectedExchangePoints: const [
+        'Centro de Intercambio Norte',
+        'Punto Central Estadio',
+        'Intercambio Plaza Sur'
+      ],
+    );
+  }
+
   Future<AppUser?> loadCurrentUserProfile() async {
     final user = _authService.currentUser;
     if (user == null) {

@@ -70,8 +70,8 @@ class _NoInternetBanner extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFF10231B),
-          borderRadius: BorderRadius.circular(12),
+          color: const Color(0xFF111827),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: const [
             BoxShadow(
               color: Color(0x33000000),
@@ -100,7 +100,7 @@ class _NoInternetBanner extends StatelessWidget {
                   Text(
                     'Revisa tu conexión para seguir intercambiando figuritas.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFFEAF4E2),
+                      color: const Color(0xFFF3F4F6),
                       height: 1.25,
                     ),
                   ),

@@ -64,7 +64,7 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
                 Text(
                   'Figuritas seleccionadas',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF10231B),
+                    color: const Color(0xFF111827),
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -74,7 +74,7 @@ class _PublishOfferScreenState extends State<PublishOfferScreen> {
                 Text(
                   'Puntos de intercambio',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF10231B),
+                    color: const Color(0xFF111827),
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -199,14 +199,14 @@ class _StatusBox extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isReady ? const Color(0xFFEAF4E2) : const Color(0xFFFFF4D2),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFD5DDD6)),
+        color: isReady ? const Color(0xFFF3F4F6) : const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Text(
         message,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: const Color(0xFF10231B),
+          color: const Color(0xFF111827),
           fontWeight: FontWeight.w700,
           height: 1.35,
         ),

@@ -44,15 +44,15 @@ class _MarketplaceCheckoutScreenState extends State<MarketplaceCheckoutScreen> {
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: AppTheme.fieldGreen,
-                    borderRadius: BorderRadius.circular(18),
+                    color: AppTheme.secondaryGreen,
+                    borderRadius: BorderRadius.circular(24),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Icon(
                         Icons.storefront_rounded,
-                        color: AppTheme.gold,
+                        color: AppTheme.accentBlue,
                         size: 42,
                       ),
                       const SizedBox(height: 14),
@@ -68,7 +68,7 @@ class _MarketplaceCheckoutScreenState extends State<MarketplaceCheckoutScreen> {
                       Text(
                         'Simulación visual. No se solicitan tarjetas, claves ni pagos reales.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFFEAF4E2),
+                          color: const Color(0xFFF3F4F6),
                           fontWeight: FontWeight.w600,
                           height: 1.35,
                         ),
@@ -152,7 +152,7 @@ class _OfferSummary extends StatelessWidget {
             Text(
               offer.ownerName,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: AppTheme.ink,
+                color: AppTheme.darkText,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -188,7 +188,7 @@ class _PriceSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFFEAF4E2),
+      color: const Color(0xFFF3F4F6),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -223,7 +223,7 @@ class _PriceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = Theme.of(context).textTheme.bodyLarge?.copyWith(
-      color: AppTheme.ink,
+      color: AppTheme.darkText,
       fontWeight: isTotal ? FontWeight.w900 : FontWeight.w700,
     );
 
@@ -244,8 +244,8 @@ class _SimulatedPaymentPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.ink,
-        borderRadius: BorderRadius.circular(14),
+        color: AppTheme.darkText,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,7 +289,7 @@ class _FakeInput extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,14 +325,14 @@ class _PaymentSuccessScreen extends StatelessWidget {
             children: [
               const Icon(
                 Icons.check_circle_rounded,
-                color: AppTheme.grassGreen,
+                color: AppTheme.primaryRed,
                 size: 58,
               ),
               const SizedBox(height: 18),
               Text(
                 'Pago simulado exitoso',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppTheme.ink,
+                  color: AppTheme.darkText,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -340,7 +340,7 @@ class _PaymentSuccessScreen extends StatelessWidget {
               Text(
                 'Tu intercambio ha sido reservado.',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFF5D6F66),
+                  color: const Color(0xFF6B7280),
                   fontWeight: FontWeight.w700,
                 ),
               ),

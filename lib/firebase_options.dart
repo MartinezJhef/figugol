@@ -43,26 +43,26 @@ class DefaultFirebaseOptions {
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyDb8pU_n0h6LXdzD4UJhu-EKJpIER6y9a8',
     appId: '1:801503442154:web:277239f420ed2e2f5ad393',
-    messagingSenderId: '801503442154',
-    projectId: 'figuritas-app-a352b',
-    authDomain: 'figuritas-app-a352b.firebaseapp.com',
-    storageBucket: 'figuritas-app-a352b.firebasestorage.app',
+    messagingSenderId: '1062528051759',
+    projectId: 'figuapp1',
+    authDomain: 'figuapp1.firebaseapp.com',
+    storageBucket: 'figuapp1.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA9Wyf7Lm5Fhffxs72WjtjRQsUgCMaQamg',
-    appId: '1:801503442154:android:1e1b1732d30828f45ad393',
-    messagingSenderId: '801503442154',
-    projectId: 'figuritas-app-a352b',
-    storageBucket: 'figuritas-app-a352b.firebasestorage.app',
+    apiKey: 'AIzaSyCnjxsoHNhdtIkpf0XY60zUrD3yZvjNagA',
+    appId: '1:1062528051759:android:10058c429c114a4fb034da',
+    messagingSenderId: '1062528051759',
+    projectId: 'figuapp1',
+    storageBucket: 'figuapp1.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA5meBkaJlCZ7C2V9nzCdHq37Qf_iyrYEw',
     appId: '1:801503442154:ios:49dab54356b1a39e5ad393',
-    messagingSenderId: '801503442154',
-    projectId: 'figuritas-app-a352b',
-    storageBucket: 'figuritas-app-a352b.firebasestorage.app',
+    messagingSenderId: '1062528051759',
+    projectId: 'figuapp1',
+    storageBucket: 'figuapp1.firebasestorage.app',
     iosClientId:
         '801503442154-8r6at0vbunsvkf0r9vk5pudp394ddbm1.apps.googleusercontent.com',
     iosBundleId: 'com.example.figugol',
@@ -71,9 +71,9 @@ class DefaultFirebaseOptions {
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyA5meBkaJlCZ7C2V9nzCdHq37Qf_iyrYEw',
     appId: '1:801503442154:ios:49dab54356b1a39e5ad393',
-    messagingSenderId: '801503442154',
-    projectId: 'figuritas-app-a352b',
-    storageBucket: 'figuritas-app-a352b.firebasestorage.app',
+    messagingSenderId: '1062528051759',
+    projectId: 'figuapp1',
+    storageBucket: 'figuapp1.firebasestorage.app',
     iosClientId:
         '801503442154-8r6at0vbunsvkf0r9vk5pudp394ddbm1.apps.googleusercontent.com',
     iosBundleId: 'com.example.figugol',
@@ -82,9 +82,9 @@ class DefaultFirebaseOptions {
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyDb8pU_n0h6LXdzD4UJhu-EKJpIER6y9a8',
     appId: '1:801503442154:web:4c9faef8b6aaf7625ad393',
-    messagingSenderId: '801503442154',
-    projectId: 'figuritas-app-a352b',
-    authDomain: 'figuritas-app-a352b.firebaseapp.com',
-    storageBucket: 'figuritas-app-a352b.firebasestorage.app',
+    messagingSenderId: '1062528051759',
+    projectId: 'figuapp1',
+    authDomain: 'figuapp1.firebaseapp.com',
+    storageBucket: 'figuapp1.firebasestorage.app',
   );
 }

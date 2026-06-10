@@ -63,8 +63,8 @@ class StickersController extends ChangeNotifier {
     StickerAlbumSection(
       id: allSectionId,
       label: 'Torneo mundial',
-      primaryColor: Color(0xFF0A3D2D),
-      secondaryColor: Color(0xFFFFC947),
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
     ),
     StickerAlbumSection(
       id: 'mexico',

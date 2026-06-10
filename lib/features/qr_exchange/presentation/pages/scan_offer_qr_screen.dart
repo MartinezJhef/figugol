@@ -222,7 +222,7 @@ class _ProposalPreview extends StatelessWidget {
         Text(
           offer.ownerName,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: const Color(0xFF10231B),
+            color: const Color(0xFF111827),
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -230,7 +230,7 @@ class _ProposalPreview extends StatelessWidget {
         Text(
           '${offer.offeredQuantity} figuritas ofrecidas',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: const Color(0xFF5D6F66),
+            color: const Color(0xFF6B7280),
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -325,14 +325,14 @@ class _InfoBox extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF4D2),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE8C767)),
+        color: const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFBFDBFE)),
       ),
       child: Text(
         message,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: const Color(0xFF10231B),
+          color: const Color(0xFF111827),
           fontWeight: FontWeight.w700,
         ),
       ),

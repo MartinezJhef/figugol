@@ -37,6 +37,10 @@ class AuthService {
     return _firebaseAuth.signInWithCredential(credential);
   }
 
+  Future<UserCredential> signInAnonymously() async {
+    return _firebaseAuth.signInAnonymously();
+  }
+
   Future<void> signOut() async {
     await _ensureGoogleInitialized();
     await _googleSignIn.signOut();
@@ -44,7 +48,9 @@ class AuthService {
   }
 
   Future<void> _ensureGoogleInitialized() {
-    return _googleInitialization ??= _googleSignIn.initialize();
+    return _googleInitialization ??= _googleSignIn.initialize(
+      serverClientId: '1062528051759-chduosjvchje8cpp3348hnmtniljnqh3.apps.googleusercontent.com',
+    );
   }
 }
 

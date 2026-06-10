@@ -96,7 +96,7 @@ class _CartEmptyState extends StatelessWidget {
           children: [
             const Icon(
               Icons.shopping_basket_outlined,
-              color: AppTheme.grassGreen,
+              color: AppTheme.primaryRed,
               size: 58,
             ),
             const SizedBox(height: 14),
@@ -104,7 +104,7 @@ class _CartEmptyState extends StatelessWidget {
               'Selecciona mínimo 6 figuritas',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppTheme.ink,
+                color: AppTheme.darkText,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -113,7 +113,7 @@ class _CartEmptyState extends StatelessWidget {
               'Agrega repetidas desde “Mis figuritas” para preparar tu intercambio.',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFF5D6F66),
+                color: const Color(0xFF6B7280),
                 fontWeight: FontWeight.w600,
                 height: 1.35,
               ),
@@ -136,14 +136,14 @@ class _CartSummary extends StatelessWidget {
     final isReady = totalItems >= TradeCartController.minimumItemsToPublish;
 
     return Card(
-      color: isReady ? const Color(0xFFEAF4E2) : const Color(0xFFFFF4D2),
+      color: isReady ? const Color(0xFFF3F4F6) : const Color(0xFFEFF6FF),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
             Icon(
               isReady ? Icons.check_circle_rounded : Icons.info_rounded,
-              color: isReady ? AppTheme.grassGreen : const Color(0xFF7A5A00),
+              color: isReady ? AppTheme.primaryRed : const Color(0xFFD97706),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -152,7 +152,7 @@ class _CartSummary extends StatelessWidget {
                     ? 'Tienes $totalItems figuritas listas para ofrecer.'
                     : 'Debes seleccionar mínimo 6 figuritas para publicar una oferta. Faltan $missingItems.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.ink,
+                  color: AppTheme.darkText,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -180,8 +180,8 @@ class _CartItemTile extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppTheme.gold,
-          foregroundColor: AppTheme.ink,
+          backgroundColor: AppTheme.accentBlue,
+          foregroundColor: AppTheme.darkText,
           child: Text(item.sticker.catalogCode),
         ),
         title: Text(item.sticker.name),

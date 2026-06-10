@@ -18,11 +18,11 @@ String _filterLabel(StickerFilter filter) {
 }
 
 Color _readableTextColor(Color color) {
-  return color.computeLuminance() > 0.55 ? AppTheme.ink : Colors.white;
+  return color.computeLuminance() > 0.55 ? AppTheme.darkText : Colors.white;
 }
 
 Color _accentTextColor(Color color) {
-  return color.computeLuminance() > 0.55 ? AppTheme.ink : color;
+  return color.computeLuminance() > 0.55 ? AppTheme.darkText : color;
 }
 
 class StickersScreen extends StatelessWidget {
@@ -209,18 +209,18 @@ class _StickerEmptyBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFFFFF4D2),
+      color: const Color(0xFFEFF6FF),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            const Icon(Icons.style_rounded, color: Color(0xFF7A5A00)),
+            const Icon(Icons.style_rounded, color: Color(0xFFD97706)),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Aún no registraste figuritas. Toca + en una card para sumar.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.ink,
+                  color: AppTheme.darkText,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -342,7 +342,7 @@ class _AlbumSectionChip extends StatelessWidget {
     return ActionChip(
       onPressed: onTap,
       side: BorderSide(
-        color: isSelected ? section.secondaryColor : AppTheme.line,
+        color: isSelected ? section.secondaryColor : AppTheme.borderLine,
         width: isSelected ? 2 : 1,
       ),
       backgroundColor: isSelected ? section.primaryColor : Colors.white,
@@ -352,10 +352,10 @@ class _AlbumSectionChip extends StatelessWidget {
       ),
       label: Text(section.label, maxLines: 1, overflow: TextOverflow.ellipsis),
       labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-        color: isSelected ? textColor : AppTheme.ink,
+        color: isSelected ? textColor : AppTheme.darkText,
         fontWeight: FontWeight.w900,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     );
   }
 }
@@ -378,7 +378,7 @@ class _FlagDots extends StatelessWidget {
               decoration: BoxDecoration(
                 color: primaryColor,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.line),
+                border: Border.all(color: AppTheme.borderLine),
               ),
             ),
           ),
@@ -469,7 +469,7 @@ class _SelectedFilterSummary extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: const Color(0xFF5D6F66),
+              color: const Color(0xFF6B7280),
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -547,9 +547,9 @@ class _StickerCard extends StatelessWidget {
                   Colors.white,
                 )
               : Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? section.secondaryColor : AppTheme.line,
+            color: isSelected ? section.secondaryColor : AppTheme.borderLine,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: const [
@@ -613,7 +613,7 @@ class _StickerCard extends StatelessWidget {
                       ),
                     )
                   : ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(14),
                       child: Image.asset(
                         sticker.imageUrl!,
                         width: double.infinity,
@@ -633,7 +633,7 @@ class _StickerCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: textTheme.titleSmall?.copyWith(
-                color: AppTheme.ink,
+                color: AppTheme.darkText,
                 fontWeight: FontWeight.w900,
                 height: 1.12,
               ),
@@ -644,7 +644,7 @@ class _StickerCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: textTheme.bodySmall?.copyWith(
-                color: const Color(0xFF5D6F66),
+                color: const Color(0xFF6B7280),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -691,7 +691,7 @@ class _StickerNumber extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Text(
         code,
@@ -726,7 +726,7 @@ class _QuantityBadge extends StatelessWidget {
         color: isMissing
             ? const Color(0xFFDCE2DD)
             : Color.alphaBlend(color.withAlpha(41), Colors.white),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Text(
         isMissing ? 'Faltante' : 'Cantidad: $quantity',
@@ -734,7 +734,7 @@ class _QuantityBadge extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: isMissing ? const Color(0xFF5D6F66) : textColor,
+          color: isMissing ? const Color(0xFF6B7280) : textColor,
           fontWeight: FontWeight.w900,
         ),
       ),

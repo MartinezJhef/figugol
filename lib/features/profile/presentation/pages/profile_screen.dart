@@ -21,8 +21,8 @@ class ProfileScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: AppTheme.fieldGreen,
-                borderRadius: BorderRadius.circular(16),
+                color: AppTheme.secondaryGreen,
+                borderRadius: BorderRadius.circular(24),
               ),
               child: Row(
                 children: [
@@ -36,7 +36,7 @@ class ProfileScreen extends StatelessWidget {
                         ? const Icon(
                             Icons.person_rounded,
                             size: 38,
-                            color: AppTheme.fieldGreen,
+                            color: AppTheme.secondaryGreen,
                           )
                         : null,
                   ),
@@ -60,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                color: const Color(0xFFEAF4E2),
+                                color: const Color(0xFFF3F4F6),
                                 fontWeight: FontWeight.w600,
                               ),
                         ),
@@ -125,7 +125,7 @@ class _ProfileRow extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            Icon(icon, color: AppTheme.grassGreen),
+            Icon(icon, color: AppTheme.primaryRed),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -134,7 +134,7 @@ class _ProfileRow extends StatelessWidget {
                   Text(
                     label,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: const Color(0xFF5D6F66),
+                      color: const Color(0xFF6B7280),
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -142,7 +142,7 @@ class _ProfileRow extends StatelessWidget {
                   Text(
                     value,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppTheme.ink,
+                      color: AppTheme.darkText,
                       fontWeight: FontWeight.w800,
                     ),
                   ),

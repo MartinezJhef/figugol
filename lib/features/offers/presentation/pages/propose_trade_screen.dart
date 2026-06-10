@@ -49,7 +49,7 @@ class _ProposeTradeScreenState extends State<ProposeTradeScreen> {
             Text(
               'Elige tus duplicadas para ofrecer',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppTheme.ink,
+                color: AppTheme.darkText,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -80,7 +80,7 @@ class _ProposeTradeScreenState extends State<ProposeTradeScreen> {
             Text(
               'Elige las figuritas que solicitas',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppTheme.ink,
+                color: AppTheme.darkText,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -182,8 +182,8 @@ class _ProposalInfo extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFEAF4E2),
-        borderRadius: BorderRadius.circular(14),
+        color: const Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: const Text(
         'Selecciona lo que entregas y lo que deseas recibir. '
@@ -203,8 +203,8 @@ class _EmptySelectionMessage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF4D2),
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(18),
       ),
       child: Text(text),
     );

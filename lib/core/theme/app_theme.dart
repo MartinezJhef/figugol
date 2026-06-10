@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 class AppTheme {
   const AppTheme._();
 
-  static const grassGreen = Color(0xFF126B3A);
-  static const fieldGreen = Color(0xFF0A3D2D);
-  static const gold = Color(0xFFFFC947);
-  static const ink = Color(0xFF10231B);
-  static const line = Color(0xFFD5DDD6);
-  static const pitch = Color(0xFFF3F8F1);
+  static const primaryRed = Color(0xFFD22630);      // Canada Red
+  static const secondaryGreen = Color(0xFF006847);   // Mexico Green
+  static const accentBlue = Color(0xFF0A369D);      // USA Blue
+  static const darkText = Color(0xFF111827);        // Dark slate/charcoal
+  static const borderLine = Color(0xFFE5E7EB);      // Border color
+  static const bgGrey = Color(0xFFF9FAFB);          // Scaffold background
 
   static ThemeData get light {
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: grassGreen,
-      primary: grassGreen,
-      secondary: gold,
-      surface: pitch,
-      onSurface: ink,
+      seedColor: primaryRed,
+      primary: primaryRed,
+      secondary: secondaryGreen,
+      tertiary: accentBlue,
+      surface: bgGrey,
+      onSurface: darkText,
     );
 
     return ThemeData(
@@ -26,11 +27,11 @@ class AppTheme {
       fontFamily: 'Roboto',
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
-        foregroundColor: ink,
+        foregroundColor: darkText,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
-          color: ink,
+          color: darkText,
           fontSize: 22,
           fontWeight: FontWeight.w900,
         ),
@@ -39,58 +40,58 @@ class AppTheme {
         elevation: 0,
         color: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: line),
+          borderRadius: BorderRadius.circular(24), // Modern rounded corners (shapes from image)
+          side: const BorderSide(color: borderLine),
         ),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: ink,
+        backgroundColor: darkText,
         contentTextStyle: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w700,
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: ink,
+          backgroundColor: primaryRed,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16), // Rounded button
           ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: ink,
+          backgroundColor: primaryRed,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: fieldGreen,
+          foregroundColor: primaryRed,
           minimumSize: const Size.fromHeight(52),
-          side: const BorderSide(color: fieldGreen, width: 1.4),
+          side: const BorderSide(color: primaryRed, width: 1.4),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
-        indicatorColor: const Color(0xFFEAF4E2),
+        indicatorColor: const Color(0xFFF3F4F6),
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
-            color: states.contains(WidgetState.selected) ? fieldGreen : ink,
+            color: states.contains(WidgetState.selected) ? primaryRed : darkText,
             fontSize: 12,
             fontWeight: states.contains(WidgetState.selected)
                 ? FontWeight.w900
@@ -102,16 +103,16 @@ class AppTheme {
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: line),
+          borderRadius: BorderRadius.circular(16), // Rounded inputs
+          borderSide: const BorderSide(color: borderLine),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: line),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: borderLine),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: grassGreen, width: 1.6),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: primaryRed, width: 1.6),
         ),
       ),
     );

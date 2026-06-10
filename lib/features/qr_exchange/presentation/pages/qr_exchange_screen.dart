@@ -19,7 +19,7 @@ class QrExchangeScreen extends StatelessWidget {
               Text(
                 'Intercambio presencial',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: const Color(0xFF10231B),
+                  color: const Color(0xFF111827),
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -27,7 +27,7 @@ class QrExchangeScreen extends StatelessWidget {
               Text(
                 'Genera un QR para una oferta activa o escanea el QR de otro coleccionista.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: const Color(0xFF5D6F66),
+                  color: const Color(0xFF6B7280),
                   height: 1.35,
                 ),
               ),

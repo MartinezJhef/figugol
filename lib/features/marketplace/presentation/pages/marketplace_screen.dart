@@ -24,7 +24,7 @@ class MarketplaceScreen extends StatelessWidget {
               Text(
                 'Reserva intercambios por la tiendita',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: const Color(0xFF10231B),
+                  color: const Color(0xFF111827),
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -32,7 +32,7 @@ class MarketplaceScreen extends StatelessWidget {
               Text(
                 'El pago es simulado y solo sirve para ensayar el flujo visual de comisión.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: const Color(0xFF5D6F66),
+                  color: const Color(0xFF6B7280),
                   height: 1.35,
                 ),
               ),

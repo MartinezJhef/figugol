@@ -54,7 +54,7 @@ class _LocationConfirmView extends StatelessWidget {
               Text(
                 'Confirma tu zona de intercambio',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: const Color(0xFF10231B),
+                  color: const Color(0xFF111827),
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -62,7 +62,7 @@ class _LocationConfirmView extends StatelessWidget {
               Text(
                 'Usaremos una zona aproximada y un radio de 5 km para mostrar intercambios cercanos.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: const Color(0xFF5D6F66),
+                  color: const Color(0xFF6B7280),
                   height: 1.35,
                 ),
               ),
@@ -148,8 +148,8 @@ class _LocationPreview extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFD5DDD6)),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: controller.isLoadingPosition
           ? const Row(
@@ -171,7 +171,7 @@ class _LocationPreview extends StatelessWidget {
                       : 'Zona aproximada',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF10231B),
+                    color: const Color(0xFF111827),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -180,7 +180,7 @@ class _LocationPreview extends StatelessWidget {
                       ? 'Actualiza tu ubicación para calcular tu zona de intercambio.'
                       : 'Latitud: ${latitude.toStringAsFixed(5)}\nLongitud: ${longitude.toStringAsFixed(5)}\nZona: $sector\nRadio cercano: 5 km',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF5D6F66),
+                    color: const Color(0xFF6B7280),
                     height: 1.4,
                   ),
                 ),
