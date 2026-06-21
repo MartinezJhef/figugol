@@ -1,127 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/figugol_action_button.dart';
 import '../controllers/auth_controller.dart';
+import 'register_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = context.watch<AuthController>();
-    final textTheme = Theme.of(context).textTheme;
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
-    _showErrorIfNeeded(context, controller);
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF006847), Color(0xFFF9FAFB)],
-            stops: [0, 0.72],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Column(
-              children: [
-                const SizedBox(height: 28),
-                const _FootballBadge(),
-                const Spacer(),
-                Text(
-                  AppConstants.appName,
-                  textAlign: TextAlign.center,
-                  style: textTheme.displaySmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  AppConstants.appSlogan,
-                  textAlign: TextAlign.center,
-                  style: textTheme.titleMedium?.copyWith(
-                    color: const Color(0xFFF3F4F6),
-                    fontWeight: FontWeight.w700,
-                    height: 1.3,
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x22000000),
-                        blurRadius: 22,
-                        offset: Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Entrá a tu álbum futbolero',
-                        textAlign: TextAlign.center,
-                        style: textTheme.titleMedium?.copyWith(
-                          color: AppTheme.darkText,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      FigugolActionButton(
-                        label: controller.isLoading
-                            ? 'Ingresando...'
-                            : 'Ingresar con Google',
-                        icon: controller.isLoading
-                            ? Icons.hourglass_top_rounded
-                            : Icons.login_rounded,
-                        onPressed: controller.isLoading
-                            ? null
-                            : controller.signInWithGoogle,
-                      ),
-                      const SizedBox(height: 12),
-                      FigugolActionButton(
-                        label: controller.isLoading
-                            ? 'Ingresando...'
-                            : 'Ingresar como Invitado (Demo)',
-                        icon: controller.isLoading
-                            ? Icons.hourglass_top_rounded
-                            : Icons.account_circle_rounded,
-                        style: FigugolActionButtonStyle.secondary,
-                        onPressed: controller.isLoading
-                            ? null
-                            : controller.signInAnonymously,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  'Colecciona, encuentra e intercambia figuritas de forma simple.',
-                  textAlign: TextAlign.center,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF4B5563),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _onLogin() {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor ingresa tu correo y contraseña')),
+      );
+      return;
+    }
+
+    context.read<AuthController>().signInWithEmailAndPassword(email, password);
   }
 
   void _showErrorIfNeeded(BuildContext context, AuthController controller) {
@@ -134,38 +48,199 @@ class LoginScreen extends StatelessWidget {
       if (!context.mounted) {
         return;
       }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       controller.clearError();
     });
   }
-}
-
-class _FootballBadge extends StatelessWidget {
-  const _FootballBadge();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 128,
-      height: 128,
-      decoration: BoxDecoration(
-        color: AppTheme.primaryRed,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppTheme.accentBlue, width: 5),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x44000000),
-            blurRadius: 24,
-            offset: Offset(0, 12),
+    final controller = context.watch<AuthController>();
+    final textTheme = Theme.of(context).textTheme;
+
+    _showErrorIfNeeded(context, controller);
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Welcome Text at the top
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 60,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: [
+                Image.asset('assets/images/logo.png', height: 180),
+                const SizedBox(height: 20),
+                Text(
+                  'Bienvenido de nuevo',
+                  style: textTheme.displaySmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(width: 24, height: 3, color: Theme.of(context).colorScheme.onSurface),
+                    const SizedBox(width: 8),
+                    Container(width: 6, height: 3, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.54)),
+                    const SizedBox(width: 8),
+                    Container(width: 6, height: 3, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.54)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom Sheet
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
+                ),
+              ),
+              padding: const EdgeInsets.only(
+                left: 32,
+                right: 32,
+                top: 40,
+                bottom: 40,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Iniciar Sesión',
+                      style: textTheme.titleLarge?.copyWith(
+                        color: AppTheme.lightText,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    
+                    // Email Field
+                    _CustomTextField(
+                      controller: _emailController,
+                      icon: Icons.mail_outline_rounded,
+                      hintText: 'Correo electrónico',
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 20),
+                    
+                    // Password Field
+                    _CustomTextField(
+                      controller: _passwordController,
+                      icon: Icons.lock_outline_rounded,
+                      hintText: 'Contraseña',
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 32),
+                    
+                    // Sign In Button
+                    FigugolActionButton(
+                      label: controller.isLoading ? 'Cargando...' : 'Iniciar Sesión',
+                      onPressed: controller.isLoading ? null : _onLogin,
+                      style: FigugolActionButtonStyle.primary,
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Navigate to Register
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '¿No tienes cuenta? ',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterScreen(),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            'Regístrate',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: AppTheme.accentBrand,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+                    const Divider(),
+                    const SizedBox(height: 24),
+
+                    // Google Login Fallback
+                    FigugolActionButton(
+                      label: controller.isLoading ? 'Cargando...' : 'Continuar con Google',
+                      icon: Icons.login_rounded,
+                      onPressed: controller.isLoading ? null : controller.signInWithGoogle,
+                      style: FigugolActionButtonStyle.secondary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
-      child: const Icon(
-        Icons.sports_soccer_rounded,
-        color: Colors.white,
-        size: 72,
+    );
+  }
+}
+
+class _CustomTextField extends StatelessWidget {
+  const _CustomTextField({
+    required this.controller,
+    required this.icon,
+    required this.hintText,
+    this.obscureText = false,
+    this.keyboardType,
+  });
+
+  final TextEditingController controller;
+  final IconData icon;
+  final String hintText;
+  final bool obscureText;
+  final TextInputType? keyboardType;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: Colors.grey.shade400),
+        hintText: hintText,
+        hintStyle: TextStyle(color: Colors.grey.shade500),
+        filled: false,
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.borderLine),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.accentBrand, width: 2),
+        ),
       ),
     );
   }

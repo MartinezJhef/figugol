@@ -37,6 +37,40 @@ class AuthRepository {
     return _loadOrCreateUser(user);
   }
 
+  Future<AppUser> signInWithEmailAndPassword(String email, String password) async {
+    await _connectivityService.ensureInternetConnection(
+      action: ImportantNetworkAction.login,
+    );
+    final credential = await _authService.signInWithEmailAndPassword(email, password);
+    final user = credential.user;
+
+    if (user == null) {
+      throw const AuthRepositoryException(
+        'No se pudo iniciar sesión. Inténtalo nuevamente.',
+      );
+    }
+
+    return _loadOrCreateUser(user);
+  }
+
+  Future<AppUser> createUserWithEmailAndPassword(String email, String password, String username) async {
+    await _connectivityService.ensureInternetConnection(
+      action: ImportantNetworkAction.login,
+    );
+    final credential = await _authService.createUserWithEmailAndPassword(email, password);
+    final user = credential.user;
+
+    if (user == null) {
+      throw const AuthRepositoryException(
+        'No se pudo crear la cuenta. Inténtalo nuevamente.',
+      );
+    }
+
+    await user.updateDisplayName(username);
+    final appUser = await _loadOrCreateUser(user);
+    return updateExchangeName(uid: appUser.uid, exchangeName: username);
+  }
+
   Future<AppUser> signInAnonymously() async {
     // Retornar directamente el usuario invitado sin intentar conectarse a Firebase Auth ni Firestore.
     return AppUser(
@@ -94,6 +128,19 @@ class AuthRepository {
     }
 
     return AppUser.fromJson(data);
+  }
+
+  Future<void> updateOnlinePresence(String uid, bool isOnline) async {
+    if (uid == 'invitado_local') return;
+    try {
+      final now = DateTime.now();
+      await _users.doc(uid).update({
+        'isOnline': isOnline,
+        'lastSeen': Timestamp.fromDate(now),
+      });
+    } catch (_) {
+      // Ignore presence update errors if disconnected
+    }
   }
 
   Future<void> signOut() => _authService.signOut();

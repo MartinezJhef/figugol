@@ -41,6 +41,22 @@ class AuthService {
     return _firebaseAuth.signInAnonymously();
   }
 
+  Future<UserCredential> signInWithEmailAndPassword(String email, String password) async {
+    try {
+      return await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      throw AuthServiceException(e.message ?? 'Error al iniciar sesión con correo.');
+    }
+  }
+
+  Future<UserCredential> createUserWithEmailAndPassword(String email, String password) async {
+    try {
+      return await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      throw AuthServiceException(e.message ?? 'Error al crear la cuenta.');
+    }
+  }
+
   Future<void> signOut() async {
     await _ensureGoogleInitialized();
     await _googleSignIn.signOut();

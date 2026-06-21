@@ -13,16 +13,6 @@ Use generic Spanish product terms such as:
 - stickers
 - intercambio
 
-Do not use protected or trademarked terms such as:
-
-- Panini
-- FIFA
-- Qatar
-- Rusia
-- album oficial
-- mundial oficial
-- official album
-- protected tournament, federation, or brand names
 
 ## Technical Stack
 

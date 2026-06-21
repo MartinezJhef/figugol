@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../auth/data/models/app_user.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
-import '../../../marketplace/presentation/pages/marketplace_checkout_screen.dart';
-import '../../../qr_exchange/presentation/pages/scan_offer_qr_screen.dart';
 import '../../data/models/trade_offer.dart';
 import '../../data/repositories/trade_offers_repository.dart';
 import 'propose_trade_screen.dart';
@@ -21,25 +19,10 @@ class OfferDetailScreen extends StatefulWidget {
 
 class _OfferDetailScreenState extends State<OfferDetailScreen> {
   final _repository = TradeOffersRepository();
-  late Future<OfferCompatibility> _compatibilityFuture;
 
   @override
   void initState() {
     super.initState();
-    final userId = context.read<AuthController>().user?.uid;
-    _compatibilityFuture = userId == null
-        ? Future.value(
-            const OfferCompatibility(
-              missingFromOffer: [],
-              possibleToOffer: [],
-              myDuplicates: [],
-              hasEnoughDataForFullCompatibility: false,
-            ),
-          )
-        : _repository.loadOfferCompatibility(
-            userId: userId,
-            offer: widget.offer,
-          );
   }
 
   @override
@@ -49,117 +32,62 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Detalle de oferta')),
       body: SafeArea(
-        child: FutureBuilder<OfferCompatibility>(
-          future: _compatibilityFuture,
-          builder: (context, snapshot) {
-            final compatibility = snapshot.data;
-            final missingIds =
-                compatibility?.missingFromOffer
-                    .map((item) => item.sticker.id)
-                    .toSet() ??
-                const <String>{};
-
-            return ListView(
-              padding: const EdgeInsets.all(24),
-              children: [
-                _OwnerHeader(offer: widget.offer, currentUser: currentUser),
-                const SizedBox(height: 24),
-                Text(
-                  'Figuritas que ofrece',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF111827),
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ...widget.offer.stickersOffered.map(
-                  (item) => _OfferedStickerTile(
-                    item: item,
-                    isMissingForMe: missingIds.contains(item.sticker.id),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Figuritas que podrías ofrecer',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF111827),
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                if (snapshot.connectionState == ConnectionState.waiting)
-                  const Center(child: CircularProgressIndicator())
-                else ...[
-                  if (compatibility?.hasEnoughDataForFullCompatibility == false)
-                    const _InfoBox(
-                      message:
-                          'No hay suficientes datos para calcular compatibilidad completa.',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(24),
+                children: [
+                  _OwnerHeader(offer: widget.offer, currentUser: currentUser),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Figuritas que ofrece',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: AppTheme.lightText,
+                      fontWeight: FontWeight.w800,
                     ),
-                  if (compatibility?.possibleToOffer.isEmpty ?? true)
-                    const _InfoBox(
-                      message:
-                          'No encontramos duplicadas tuyas que coincidan con lo que busca esta oferta.',
-                    )
-                  else
-                    ...compatibility!.possibleToOffer.map(
-                      (sticker) => ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: CircleAvatar(child: Text(sticker.catalogCode)),
-                        title: Text(sticker.name),
-                        subtitle: Text(sticker.team),
-                      ),
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.72,
                     ),
+                    itemCount: widget.offer.stickersOffered.length,
+                    itemBuilder: (context, index) {
+                      final item = widget.offer.stickersOffered[index];
+                      return _OfferedStickerTile(item: item);
+                    },
+                  ),
+                  const SizedBox(height: 24),
                 ],
-                const SizedBox(height: 26),
-                FilledButton.icon(
-                  onPressed: compatibility == null
-                      ? null
-                      : () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => ProposeTradeScreen(
-                                offer: widget.offer,
-                                compatibility: compatibility,
-                              ),
-                            ),
-                          );
-                        },
-                  icon: const Icon(Icons.handshake_rounded),
-                  label: const Text('Proponer intercambio'),
-                ),
-                const SizedBox(height: 12),
-                FilledButton.tonalIcon(
-                  onPressed: widget.offer.offeredQuantity < 6
-                      ? null
-                      : () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => MarketplaceCheckoutScreen(
-                                offer: widget.offer,
-                              ),
-                            ),
-                          );
-                        },
-                  icon: const Icon(Icons.storefront_rounded),
-                  label: const Text('Tramitar por tiendita'),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const ScanOfferQrScreen(),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: FilledButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => ProposeTradeScreen(
+                        offer: widget.offer,
                       ),
-                    );
-                  },
-                  icon: const Icon(Icons.qr_code_scanner_rounded),
-                  label: const Text('Escanear QR para intercambio presencial'),
-                ),
-              ],
-            );
-          },
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.handshake_rounded),
+                label: const Text('Proponer intercambio'),
+              ),
+            ),
+          ],
         ),
       ),
+      backgroundColor: AppTheme.bgDark,
     );
   }
 }
@@ -184,6 +112,7 @@ class _OwnerHeader extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 28,
+          backgroundColor: const Color(0xFFF3F4F6),
           backgroundImage: offer.ownerPhotoUrl == null
               ? null
               : NetworkImage(offer.ownerPhotoUrl!),
@@ -200,7 +129,10 @@ class _OwnerHeader extends StatelessWidget {
                 offer.ownerName,
                 style: Theme.of(
                   context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                ).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.lightText,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -208,7 +140,7 @@ class _OwnerHeader extends StatelessWidget {
                     ? '${offer.offeredQuantity} figuritas ofrecidas'
                     : '${offer.offeredQuantity} figuritas · ${distance.toStringAsFixed(1)} km aprox.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFF6B7280),
+                  color: const Color(0xFF9CA3AF),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -221,65 +153,79 @@ class _OwnerHeader extends StatelessWidget {
 }
 
 class _OfferedStickerTile extends StatelessWidget {
-  const _OfferedStickerTile({required this.item, required this.isMissingForMe});
+  const _OfferedStickerTile({required this.item});
 
   final TradeOfferSticker item;
-  final bool isMissingForMe;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(child: Text(item.sticker.catalogCode)),
-      title: Text(item.sticker.name),
-      subtitle: Text(item.sticker.team),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text('x${item.quantity}'),
-          if (isMissingForMe)
-            Text(
-              'Me falta',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: const Color(0xFFD22630),
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-        ],
-      ),
-      tileColor: isMissingForMe ? const Color(0xFFF3F4F6) : Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: isMissingForMe ? AppTheme.primaryRed : AppTheme.borderLine,
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoBox extends StatelessWidget {
-  const _InfoBox({required this.message});
-
-  final String message;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF6FF),
+        color: AppTheme.cardDark,
+        image: DecorationImage(
+          image: const AssetImage('assets/images/app_bg.png'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withValues(alpha: 0.6),
+            BlendMode.darken,
+          ),
+        ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFBFDBFE)),
+        border: Border.all(color: AppTheme.borderLine, width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 14,
+            offset: Offset(0, 7),
+          ),
+        ],
       ),
-      child: Text(
-        message,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: const Color(0xFF111827),
-          fontWeight: FontWeight.w700,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+                child: item.sticker.imageUrl != null && item.sticker.imageUrl!.startsWith('http')
+                    ? Image.network(
+                        item.sticker.imageUrl!,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Center(
+                            child: Icon(Icons.broken_image, color: Colors.white24)),
+                      )
+                    : item.sticker.imageUrl != null
+                        ? Image.asset(item.sticker.imageUrl!, fit: BoxFit.contain)
+                        : const Center(
+                            child: Icon(Icons.image_not_supported, color: Colors.white24),
+                          ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryBrand.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Cantidad: ${item.quantity}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                        color: AppTheme.primaryBrand,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

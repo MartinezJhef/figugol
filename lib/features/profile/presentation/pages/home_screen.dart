@@ -4,12 +4,17 @@ import 'package:provider/provider.dart';
 import '../../../../core/services/connectivity_service.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
-import '../../../location/presentation/pages/location_confirm_screen.dart';
+
 import '../../../offers/presentation/pages/nearby_offers_screen.dart';
-import '../../../offers/presentation/pages/publish_offer_screen.dart';
+import '../../../offers/presentation/pages/my_published_offers_screen.dart';
+import '../../../offers/presentation/pages/notifications_screen.dart';
+import '../../../offers/data/models/trade_notification.dart';
+import '../../../offers/data/repositories/trade_offers_repository.dart';
 import '../../../stickers/data/models/sticker_stats.dart';
 import '../../../stickers/data/repositories/stickers_repository.dart';
 import '../../../stickers/presentation/pages/stickers_screen.dart';
+import '../../../stickers/presentation/controllers/stickers_controller.dart';
+import '../../../../features/qr_exchange/presentation/pages/user_qr_options_modal.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, this.onOpenTab});
@@ -22,41 +27,127 @@ class HomeScreen extends StatelessWidget {
     final exchangeName = user?.exchangeName ?? 'Coleccionista';
     final userId = user?.uid;
 
+    final hour = DateTime.now().hour;
+    final String greetingSubtitle;
+    if (hour < 12) {
+      greetingSubtitle = 'Buenos días';
+    } else if (hour < 19) {
+      greetingSubtitle = 'Buenas tardes';
+    } else {
+      greetingSubtitle = 'Buenas noches';
+    }
+
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Icon(Icons.grid_view_rounded, color: AppTheme.lightText, size: 28),
+              Text(
+                'Inicio',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: AppTheme.lightText,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              if (userId != null)
+                StreamBuilder<List<TradeNotification>>(
+                  stream: TradeOffersRepository().watchNotifications(userId),
+                  builder: (context, snapshot) {
+                    final notifications = snapshot.data ?? [];
+                    final hasUnread = notifications.any((n) => n.status == TradeNotificationStatus.unread);
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const NotificationsScreen(),
+                          ),
+                        );
+                      },
+                      child: Stack(
+                        children: [
+                          const Icon(Icons.notifications_none_rounded, color: AppTheme.lightText, size: 30),
+                          if (hasUnread)
+                            Positioned(
+                              right: 2,
+                              top: 2,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: const BoxDecoration(
+                                  color: AppTheme.secondaryBrand,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                )
+              else
+                const Icon(Icons.notifications_none_rounded, color: AppTheme.lightText, size: 30),
+            ],
+          ),
+          const SizedBox(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  '¡Hola $exchangeName!',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppTheme.accentBrand,
+                    fontWeight: FontWeight.w900,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (userId != null)
+                IconButton(
+                  onPressed: () => UserQrOptionsModal.show(context),
+                  icon: const Icon(Icons.qr_code_rounded, color: AppTheme.accentBrand, size: 32),
+                ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            greetingSubtitle,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: const Color(0xFF9CA3AF),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppTheme.secondaryGreen,
+              color: AppTheme.cardDark,
               borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppTheme.borderLine, width: 1.5),
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.sports_soccer_rounded,
-                  color: AppTheme.accentBlue,
-                  size: 42,
-                ),
-                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hola, $exchangeName',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                            ),
+                        '¡Bienvenido!',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppTheme.accentBrand,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
-                        'Revisa tu álbum y encuentra intercambios cerca de tu zona.',
+                        'Organiza tus intercambios y completa tu álbum.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFFF3F4F6),
+                          color: const Color(0xFF4B5563),
                           fontWeight: FontWeight.w600,
                           height: 1.35,
                         ),
@@ -64,17 +155,29 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                const SizedBox(width: 16),
+                Container(
+                  height: 72,
+                  width: 72,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/logo.png'),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 18),
           const _ConnectionStatusCard(),
-          const SizedBox(height: 12),
-          _LocationStatusCard(
-            locationConfirmed: user?.locationConfirmed ?? false,
-            selectedPointsCount: user?.selectedExchangePoints.length ?? 0,
-          ),
-          const SizedBox(height: 16),
+
+
+
+
+
+
           if (userId == null)
             const _StatsGrid(
               stats: StickerStats(owned: 0, duplicates: 0, missing: 0),
@@ -93,6 +196,7 @@ class HomeScreen extends StatelessWidget {
                   );
                 }
                 return _StatsGrid(
+                  onOpenTab: onOpenTab,
                   stats:
                       snapshot.data ??
                       const StickerStats(owned: 0, duplicates: 0, missing: 0),
@@ -100,30 +204,65 @@ class HomeScreen extends StatelessWidget {
               },
             ),
           const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: () => _openStickers(context),
-            icon: const Icon(Icons.style_rounded),
-            label: const Text('Registrar figuritas'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'Acciones',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: AppTheme.lightText,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Text(
+                'ver todo',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xFF6B7280),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: user?.canPublishOffers == true
-                ? () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const PublishOfferScreen(),
-                    ),
-                  )
-                : null,
-            icon: const Icon(Icons.add_business_rounded),
-            label: const Text('Publicar intercambio'),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: user?.location == null
-                ? null
-                : () => _openNearbyOffers(context),
-            icon: const Icon(Icons.travel_explore_rounded),
-            label: const Text('Ver ofertas cercanas'),
+          const SizedBox(height: 16),
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 0.95,
+            children: [
+              _ActionCard(
+                title: 'Registrar\nFiguritas',
+                icon: Icons.style_rounded,
+                isPrimary: true,
+                onTap: () => _openStickers(context),
+              ),
+              _ActionCard(
+                title: 'Publicadas para\nIntercambio',
+                icon: Icons.storefront_rounded,
+                onTap: user != null
+                    ? () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const MyPublishedOffersScreen(),
+                        ),
+                      )
+                    : null,
+              ),
+              _ActionCard(
+                title: 'Ver Ofertas\nCercanas',
+                icon: Icons.travel_explore_rounded,
+                onTap: user?.location == null
+                    ? null
+                    : () => _openNearbyOffers(context),
+              ),
+              _ActionCard(
+                title: 'Ver mi\nalbum',
+                icon: Icons.book_rounded,
+                onTap: () => _openAlbum(context),
+              ),
+            ],
           ),
         ],
       ),
@@ -133,23 +272,26 @@ class HomeScreen extends StatelessWidget {
   void _openStickers(BuildContext context) {
     final callback = onOpenTab;
     if (callback != null) {
-      callback(1);
+      callback(1); // Repetidas
       return;
     }
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const StickersScreen()));
+  }
+
+  void _openAlbum(BuildContext context) {
+    final callback = onOpenTab;
+    if (callback != null) {
+      context.read<StickersController>().setFilter(StickerFilter.all);
+      callback(2); // Mi Álbum
+      return;
+    }
   }
 
   void _openNearbyOffers(BuildContext context) {
     final callback = onOpenTab;
     if (callback != null) {
-      callback(2);
+      callback(3); // Tiendita (Marketplace)
       return;
     }
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => NearbyOffersScreen()));
   }
 }
 
@@ -163,50 +305,21 @@ class _ConnectionStatusCard extends StatelessWidget {
       initialData: true,
       builder: (context, snapshot) {
         final isOnline = snapshot.data ?? true;
-        return _StatusCard(
-          icon: isOnline ? Icons.wifi_rounded : Icons.wifi_off_rounded,
-          text: isOnline ? 'Conexión disponible.' : 'Sin conexión a internet.',
-          isReady: isOnline,
-        );
-      },
-    );
-  }
-}
-
-class _LocationStatusCard extends StatelessWidget {
-  const _LocationStatusCard({
-    required this.locationConfirmed,
-    required this.selectedPointsCount,
-  });
-
-  final bool locationConfirmed;
-  final int selectedPointsCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final isReady = locationConfirmed && selectedPointsCount == 3;
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => const LocationConfirmScreen(),
+        if (isOnline) {
+          return const SizedBox.shrink();
+        }
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _StatusCard(
+            icon: Icons.wifi_off_rounded,
+            text: 'Sin conexión a internet.',
+            isReady: false,
           ),
         );
       },
-      borderRadius: BorderRadius.circular(20),
-      child: _StatusCard(
-        icon: isReady ? Icons.check_circle_rounded : Icons.info_rounded,
-        text: isReady
-            ? 'Ubicación y 3 puntos confirmados.'
-            : locationConfirmed
-            ? 'Seleccionaste $selectedPointsCount de 3 puntos.'
-            : 'Confirma tu ubicación para continuar.',
-        isReady: isReady,
-      ),
     );
   }
 }
-
 class _StatusCard extends StatelessWidget {
   const _StatusCard({
     required this.icon,
@@ -233,14 +346,14 @@ class _StatusCard extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: isReady ? AppTheme.primaryRed : const Color(0xFFD97706),
+            color: isReady ? AppTheme.primaryBrand : const Color(0xFFD97706),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.darkText,
+                color: AppTheme.lightText,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -287,13 +400,13 @@ class _HomeInfoCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(icon, color: AppTheme.primaryRed),
+            Icon(icon, color: AppTheme.primaryBrand),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.darkText,
+                  color: AppTheme.lightText,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -306,9 +419,10 @@ class _HomeInfoCard extends StatelessWidget {
 }
 
 class _StatsGrid extends StatelessWidget {
-  const _StatsGrid({required this.stats});
+  const _StatsGrid({required this.stats, this.onOpenTab});
 
   final StickerStats stats;
+  final ValueChanged<int>? onOpenTab;
 
   @override
   Widget build(BuildContext context) {
@@ -320,50 +434,165 @@ class _StatsGrid extends StatelessWidget {
       crossAxisSpacing: 10,
       childAspectRatio: 1.05,
       children: [
-        _StatTile(label: 'Tengo', value: stats.owned),
-        _StatTile(label: 'Repetidas', value: stats.duplicates),
-        _StatTile(label: 'Faltantes', value: stats.missing),
+        _StatTile(
+          label: 'Tengo',
+          value: stats.owned,
+          onTap: () {
+            context.read<StickersController>().setFilter(StickerFilter.owned);
+            onOpenTab?.call(2); // Mi Álbum
+          },
+        ),
+        _StatTile(
+          label: 'Repetidas',
+          value: stats.duplicates,
+          onTap: () {
+            context.read<StickersController>().setFilter(StickerFilter.duplicates);
+            onOpenTab?.call(1); // Repetidas
+          },
+        ),
+        _StatTile(
+          label: 'Faltantes',
+          value: stats.missing,
+          onTap: () {
+            context.read<StickersController>().setFilter(StickerFilter.missing);
+            onOpenTab?.call(2); // Mi Álbum
+          },
+        ),
       ],
     );
   }
 }
 
 class _StatTile extends StatelessWidget {
-  const _StatTile({required this.label, required this.value});
+  const _StatTile({required this.label, required this.value, this.onTap});
 
   final String label;
   final int value;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.borderLine),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppTheme.cardDark,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.borderLine),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '$value',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: AppTheme.lightText,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: const Color(0xFF6B7280),
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '$value',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppTheme.darkText,
-              fontWeight: FontWeight.w900,
+    );
+  }
+}
+
+class _ActionCard extends StatelessWidget {
+  const _ActionCard({
+    required this.title,
+    required this.icon,
+    this.onTap,
+    this.isPrimary = false,
+  });
+
+  final String title;
+  final IconData icon;
+  final VoidCallback? onTap;
+  final bool isPrimary;
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = isPrimary ? AppTheme.accentBrand : AppTheme.cardDark;
+    final textColor = isPrimary ? Colors.white : AppTheme.lightText;
+    final iconColor = isPrimary ? Colors.white : AppTheme.accentBrand;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(24),
+          border: isPrimary ? null : Border.all(color: AppTheme.borderLine),
+          boxShadow: isPrimary
+              ? [
+                  BoxShadow(
+                    color: AppTheme.accentBrand.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(icon, color: iconColor, size: 32),
+                Icon(Icons.more_vert, color: textColor.withValues(alpha: 0.5), size: 20),
+              ],
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: const Color(0xFF6B7280),
-              fontWeight: FontWeight.w800,
+            const Spacer(),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.w900,
+                height: 1.2,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Container(
+              height: 4,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: isPrimary ? Colors.white.withValues(alpha: 0.3) : AppTheme.borderLine,
+                borderRadius: BorderRadius.circular(2),
+              ),
+              alignment: Alignment.centerLeft,
+              child: FractionallySizedBox(
+                widthFactor: 0.6,
+                child: Container(
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: isPrimary ? Colors.white : AppTheme.primaryBrand,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

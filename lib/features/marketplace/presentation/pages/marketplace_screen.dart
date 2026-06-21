@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../../../offers/presentation/pages/nearby_offers_screen.dart';
 
 class MarketplaceScreen extends StatelessWidget {
@@ -7,50 +8,129 @@ class MarketplaceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Tiendita')),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.storefront_rounded,
-                color: Theme.of(context).colorScheme.primary,
-                size: 48,
+      body: Column(
+        children: [
+          // Top curved section
+          Container(
+            height: size.height * 0.55,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppTheme.cardDark,
+              image: const DecorationImage(
+                image: AssetImage('assets/images/tiendita_bg.png'),
+                fit: BoxFit.cover,
               ),
-              const SizedBox(height: 18),
-              Text(
-                'Reserva intercambios por la tiendita',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: const Color(0xFF111827),
-                  fontWeight: FontWeight.w800,
-                ),
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.elliptical(size.width, 80),
               ),
-              const SizedBox(height: 10),
-              Text(
-                'El pago es simulado y solo sirve para ensayar el flujo visual de comisión.',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: const Color(0xFF6B7280),
-                  height: 1.35,
-                ),
-              ),
-              const SizedBox(height: 24),
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => NearbyOffersScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.travel_explore_rounded),
-                label: const Text('Buscar ofertas para reservar'),
-              ),
-            ],
+            ),
           ),
-        ),
+
+          // Bottom section
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 32.0,
+                vertical: 24.0,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      Text(
+                        'Reserva intercambios\npor la tiendita',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: AppTheme.lightText,
+                          fontWeight: FontWeight.w900,
+                          height: 1.3,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Visualiza los intercambio a los cuales puedes ser participe.',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: const Color(0xFF9CA3AF),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Dots indicator
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF6B7280).withValues(alpha: 0.3),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF6B7280).withValues(alpha: 0.3),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        width: 20,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: AppTheme.primaryBrand,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Bottom Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppTheme.primaryBrand,
+                        foregroundColor: AppTheme.bgDark,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => NearbyOffersScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Buscar ofertas para reservar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

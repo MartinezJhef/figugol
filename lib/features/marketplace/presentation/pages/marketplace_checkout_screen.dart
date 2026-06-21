@@ -44,7 +44,7 @@ class _MarketplaceCheckoutScreenState extends State<MarketplaceCheckoutScreen> {
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: AppTheme.secondaryGreen,
+                    color: AppTheme.secondaryBrand,
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: Column(
@@ -52,7 +52,7 @@ class _MarketplaceCheckoutScreenState extends State<MarketplaceCheckoutScreen> {
                     children: [
                       const Icon(
                         Icons.storefront_rounded,
-                        color: AppTheme.accentBlue,
+                        color: AppTheme.accentBrand,
                         size: 42,
                       ),
                       const SizedBox(height: 14),
@@ -152,7 +152,7 @@ class _OfferSummary extends StatelessWidget {
             Text(
               offer.ownerName,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: AppTheme.darkText,
+                color: AppTheme.lightText,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -223,7 +223,7 @@ class _PriceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = Theme.of(context).textTheme.bodyLarge?.copyWith(
-      color: AppTheme.darkText,
+      color: AppTheme.lightText,
       fontWeight: isTotal ? FontWeight.w900 : FontWeight.w700,
     );
 
@@ -244,7 +244,7 @@ class _SimulatedPaymentPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.darkText,
+        color: AppTheme.lightText,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -325,14 +325,14 @@ class _PaymentSuccessScreen extends StatelessWidget {
             children: [
               const Icon(
                 Icons.check_circle_rounded,
-                color: AppTheme.primaryRed,
+                color: AppTheme.primaryBrand,
                 size: 58,
               ),
               const SizedBox(height: 18),
               Text(
                 'Pago simulado exitoso',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppTheme.darkText,
+                  color: AppTheme.lightText,
                   fontWeight: FontWeight.w900,
                 ),
               ),

@@ -14,6 +14,8 @@ class AppUser {
     required this.locationConfirmed,
     required this.selectedExchangePoints,
     this.location,
+    this.isOnline = false,
+    this.lastSeen,
   });
 
   final String uid;
@@ -26,6 +28,8 @@ class AppUser {
   final bool locationConfirmed;
   final List<String> selectedExchangePoints;
   final UserLocation? location;
+  final bool isOnline;
+  final DateTime? lastSeen;
 
   bool get hasCompletedProfile =>
       exchangeName != null && exchangeName!.trim().isNotEmpty;
@@ -46,6 +50,8 @@ class AppUser {
     bool? locationConfirmed,
     List<String>? selectedExchangePoints,
     UserLocation? location,
+    bool? isOnline,
+    DateTime? lastSeen,
   }) {
     return AppUser(
       uid: uid ?? this.uid,
@@ -59,6 +65,8 @@ class AppUser {
       selectedExchangePoints:
           selectedExchangePoints ?? this.selectedExchangePoints,
       location: location ?? this.location,
+      isOnline: isOnline ?? this.isOnline,
+      lastSeen: lastSeen ?? this.lastSeen,
     );
   }
 
@@ -77,6 +85,8 @@ class AppUser {
               .map((point) => point.toString())
               .toList(),
       location: _readLocation(json['location']),
+      isOnline: json['isOnline'] as bool? ?? false,
+      lastSeen: json['lastSeen'] != null ? _readDateTime(json['lastSeen']) : null,
     );
   }
 
@@ -92,6 +102,8 @@ class AppUser {
       'locationConfirmed': locationConfirmed,
       'selectedExchangePoints': selectedExchangePoints,
       'location': location?.toJson(),
+      'isOnline': isOnline,
+      if (lastSeen != null) 'lastSeen': Timestamp.fromDate(lastSeen!),
     };
   }
 

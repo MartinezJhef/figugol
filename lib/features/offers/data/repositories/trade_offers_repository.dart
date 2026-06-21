@@ -7,10 +7,11 @@ import '../../../location/data/models/exchange_point.dart';
 import '../../../stickers/data/models/sticker.dart';
 import '../../../stickers/data/models/user_sticker.dart';
 import '../../../stickers/data/repositories/stickers_repository.dart';
-import '../../../stickers/data/sources/demo_sticker_catalog.dart';
+import '../../../stickers/data/sources/full_catalog.dart';
 import '../../presentation/controllers/trade_cart_controller.dart';
 import '../models/trade_offer.dart';
 import '../models/trade_proposal.dart';
+import '../models/trade_notification.dart';
 
 class TradeOffersRepository {
   TradeOffersRepository({
@@ -33,16 +34,16 @@ class TradeOffersRepository {
       ownerPhotoUrl: null,
       stickersOffered: [
         TradeOfferSticker(
-          sticker: demoStickerCatalog[0],
+          sticker: fullStickerCatalog[0],
           quantity: 2,
         ),
         TradeOfferSticker(
-          sticker: demoStickerCatalog[1],
+          sticker: fullStickerCatalog[1],
           quantity: 1,
         ),
       ],
       missingStickers: [
-        demoStickerCatalog[2],
+        fullStickerCatalog[2],
       ],
       exchangePoints: [
         ExchangePoint(
@@ -87,12 +88,12 @@ class TradeOffersRepository {
       ownerPhotoUrl: null,
       stickersOffered: [
         TradeOfferSticker(
-          sticker: demoStickerCatalog[2],
+          sticker: fullStickerCatalog[2],
           quantity: 1,
         ),
       ],
       missingStickers: [
-        demoStickerCatalog[0],
+        fullStickerCatalog[0],
       ],
       exchangePoints: [
         ExchangePoint(
@@ -303,13 +304,30 @@ class TradeOffersRepository {
 
   Stream<List<TradeOffer>> watchMyActiveOffers(String userId) {
     if (userId == 'invitado_local') {
-      return Stream.value(_localMockOffers.where((offer) => offer.ownerId == 'invitado_local').toList());
+      return Stream.value(_localMockOffers.where((offer) => offer.ownerId == 'invitado_local' && offer.status == TradeOfferStatus.active).toList());
     }
 
     return _firestore
         .collection('tradeOffers')
         .where('ownerId', isEqualTo: userId)
         .where('status', isEqualTo: TradeOfferStatus.active.value)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((document) => TradeOffer.fromJson(document.data()))
+              .toList();
+        });
+  }
+
+  Stream<List<TradeOffer>> watchMyCompletedOffers(String userId) {
+    if (userId == 'invitado_local') {
+      return Stream.value(_localMockOffers.where((offer) => offer.ownerId == 'invitado_local' && offer.status == TradeOfferStatus.completed).toList());
+    }
+
+    return _firestore
+        .collection('tradeOffers')
+        .where('ownerId', isEqualTo: userId)
+        .where('status', isEqualTo: TradeOfferStatus.completed.value)
         .snapshots()
         .map((snapshot) {
           return snapshot.docs
@@ -366,10 +384,117 @@ class TradeOffersRepository {
       );
     }
 
+      final proposalRef = _firestore.collection('tradeProposals').doc();
+      final notificationRef = _firestore.collection('tradeNotifications').doc();
+      
+      final proposal = TradeProposal(
+        id: proposalRef.id,
+        offerId: offerId,
+        fromUserId: fromUserId,
+        toUserId: toUserId,
+        offeredStickers: offeredStickers,
+        requestedStickers: requestedStickers,
+        status: TradeProposalStatus.pending,
+        createdAt: DateTime.now(),
+      );
+
+      final offerRef = _firestore.collection('tradeOffers').doc(offerId);
+      final collectionRef = _firestore
+          .collection('sticker_collections')
+          .doc(fromUserId)
+          .collection('stickers');
+
+      await _firestore.runTransaction((transaction) async {
+        final offerSnapshot = await transaction.get(offerRef);
+        final data = offerSnapshot.data();
+        if (data == null) {
+          throw const TradeOfferException('La oferta ya no esta disponible.');
+        }
+
+        final currentOffer = TradeOffer.fromJson(data);
+        if (currentOffer.ownerId != toUserId ||
+            currentOffer.status != TradeOfferStatus.active) {
+          throw const TradeOfferException('La oferta ya no esta disponible.');
+        }
+
+        final offeredByOwner = <String, int>{
+          for (final item in currentOffer.stickersOffered)
+            item.sticker.id: item.quantity,
+        };
+        for (final requested in requestedStickers) {
+          if (requested.quantity < 1 ||
+              (offeredByOwner[requested.sticker.id] ?? 0) < requested.quantity) {
+            throw const TradeOfferException(
+              'Una figurita solicitada ya no esta disponible.',
+            );
+          }
+        }
+
+        for (final offered in offeredStickers) {
+          final stickerSnapshot = await transaction.get(
+            collectionRef.doc(offered.sticker.id),
+          );
+          final ownedQuantity = stickerSnapshot.data()?['quantity'] as int? ?? 0;
+          if (offered.quantity < 1 || offered.quantity > ownedQuantity) {
+            throw TradeOfferException(
+              'Ya no tienes duplicadas suficientes de ${offered.sticker.catalogCode}.',
+            );
+          }
+        }
+
+        transaction.set(proposalRef, proposal.toJson());
+        
+        // Also fetch fromUser to get their name for the notification
+        final fromUserSnapshot = await transaction.get(_firestore.collection('users').doc(fromUserId));
+        final fromUserName = fromUserSnapshot.data()?['exchangeName'] as String? ?? 'Alguien';
+
+        final notification = {
+          'id': notificationRef.id,
+          'toUserId': toUserId,
+          'fromUserId': fromUserId,
+          'fromUserName': fromUserName,
+          'proposalId': proposalRef.id,
+          'offerId': offerId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'status': 'unread',
+        };
+        
+        transaction.set(notificationRef, notification);
+      });
+  }
+
+  Future<void> createDirectProposal({
+    required String fromUserId,
+    required String toUserId,
+    required List<TradeOfferSticker> offeredStickers,
+    required List<TradeOfferSticker> requestedStickers,
+  }) async {
+    if (fromUserId == 'invitado_local') {
+      return;
+    }
+
+    await _connectivityService.ensureInternetConnection(
+      action: ImportantNetworkAction.sendExchange,
+    );
+
+    if (fromUserId == toUserId) {
+      throw const TradeOfferException(
+        'No puedes intercambiar contigo mismo.',
+      );
+    }
+    if (offeredStickers.isEmpty && requestedStickers.isEmpty) {
+      throw const TradeOfferException(
+        'Selecciona figuritas para el intercambio.',
+      );
+    }
+
     final proposalRef = _firestore.collection('tradeProposals').doc();
+    final notificationRef = _firestore.collection('tradeNotifications').doc();
+    final dummyOfferId = 'direct_${DateTime.now().millisecondsSinceEpoch}';
+
     final proposal = TradeProposal(
       id: proposalRef.id,
-      offerId: offerId,
+      offerId: dummyOfferId,
       fromUserId: fromUserId,
       toUserId: toUserId,
       offeredStickers: offeredStickers,
@@ -378,44 +503,18 @@ class TradeOffersRepository {
       createdAt: DateTime.now(),
     );
 
-    final offerRef = _firestore.collection('tradeOffers').doc(offerId);
     final collectionRef = _firestore
         .collection('sticker_collections')
         .doc(fromUserId)
         .collection('stickers');
 
     await _firestore.runTransaction((transaction) async {
-      final offerSnapshot = await transaction.get(offerRef);
-      final data = offerSnapshot.data();
-      if (data == null) {
-        throw const TradeOfferException('La oferta ya no esta disponible.');
-      }
-
-      final currentOffer = TradeOffer.fromJson(data);
-      if (currentOffer.ownerId != toUserId ||
-          currentOffer.status != TradeOfferStatus.active) {
-        throw const TradeOfferException('La oferta ya no esta disponible.');
-      }
-
-      final offeredByOwner = <String, int>{
-        for (final item in currentOffer.stickersOffered)
-          item.sticker.id: item.quantity,
-      };
-      for (final requested in requestedStickers) {
-        if (requested.quantity < 1 ||
-            (offeredByOwner[requested.sticker.id] ?? 0) < requested.quantity) {
-          throw const TradeOfferException(
-            'Una figurita solicitada ya no esta disponible.',
-          );
-        }
-      }
-
       for (final offered in offeredStickers) {
         final stickerSnapshot = await transaction.get(
           collectionRef.doc(offered.sticker.id),
         );
         final ownedQuantity = stickerSnapshot.data()?['quantity'] as int? ?? 0;
-        if (offered.quantity < 1 || offered.quantity > ownedQuantity - 1) {
+        if (offered.quantity < 1 || offered.quantity > ownedQuantity) {
           throw TradeOfferException(
             'Ya no tienes duplicadas suficientes de ${offered.sticker.catalogCode}.',
           );
@@ -423,6 +522,52 @@ class TradeOffersRepository {
       }
 
       transaction.set(proposalRef, proposal.toJson());
+      
+      final fromUserSnapshot = await transaction.get(_firestore.collection('users').doc(fromUserId));
+      final fromUserName = fromUserSnapshot.data()?['exchangeName'] as String? ?? 'Alguien';
+
+      final notification = {
+        'id': notificationRef.id,
+        'toUserId': toUserId,
+        'fromUserId': fromUserId,
+        'fromUserName': fromUserName,
+        'proposalId': proposalRef.id,
+        'offerId': dummyOfferId,
+        'createdAt': FieldValue.serverTimestamp(),
+        'status': 'unread',
+      };
+      
+      transaction.set(notificationRef, notification);
+    });
+  }
+
+  Stream<List<TradeNotification>> watchNotifications(String userId) {
+    if (userId == 'invitado_local') {
+      return Stream.value([]);
+    }
+
+    return _firestore
+        .collection('tradeNotifications')
+        .where('toUserId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            // serverTimestamp might be null while pending, handle it gracefully
+            if (data['createdAt'] == null) {
+              data['createdAt'] = Timestamp.now();
+            }
+            return TradeNotification.fromJson(data);
+          }).toList();
+        });
+  }
+
+  Future<void> markNotificationAsRead(String notificationId) async {
+    if (notificationId.startsWith('notif_local_')) return;
+    
+    await _firestore.collection('tradeNotifications').doc(notificationId).update({
+      'status': TradeNotificationStatus.read.name,
     });
   }
 
@@ -456,7 +601,7 @@ class TradeOffersRepository {
       return (myStickers[item.sticker.id]?.quantity ?? 0) == 0;
     }).toList();
 
-    final myDuplicates = demoStickerCatalog.where((sticker) {
+    final myDuplicates = fullStickerCatalog.where((sticker) {
       return (myStickers[sticker.id]?.quantity ?? 0) > 1;
     }).toList();
 

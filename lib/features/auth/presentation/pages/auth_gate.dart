@@ -29,6 +29,26 @@ class _LoadingSessionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image(
+              image: AssetImage('assets/images/app_bg.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          Center(
+            child: SizedBox.square(
+              dimension: 36,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

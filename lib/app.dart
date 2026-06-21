@@ -22,7 +22,7 @@ class FigugolApp extends StatelessWidget {
       child: MaterialApp(
         title: AppConstants.appName,
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
+        theme: AppTheme.dark,
         initialRoute: AppRoutes.authGate,
         routes: {AppRoutes.authGate: (_) => const AuthGate()},
         builder: (context, child) {

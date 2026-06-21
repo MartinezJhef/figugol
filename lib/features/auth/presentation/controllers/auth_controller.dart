@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/services/connectivity_service.dart';
@@ -8,7 +10,7 @@ import '../../data/sources/auth_service.dart';
 
 enum AuthFlowStatus { checking, signedOut, profileIncomplete, signedIn }
 
-class AuthController extends ChangeNotifier {
+class AuthController extends ChangeNotifier with WidgetsBindingObserver {
   AuthController({
     AuthRepository? authRepository,
     bool loadCurrentUserOnStart = true,
@@ -19,6 +21,24 @@ class AuthController extends ChangeNotifier {
       refreshCurrentUser();
     } else {
       _status = AuthFlowStatus.signedOut;
+    }
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_user == null) return;
+    
+    if (state == AppLifecycleState.resumed) {
+      _repository.updateOnlinePresence(_user!.uid, true);
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      _repository.updateOnlinePresence(_user!.uid, false);
     }
   }
 
@@ -38,6 +58,9 @@ class AuthController extends ChangeNotifier {
     _setLoading(true);
     try {
       _user = await _repository.loadCurrentUserProfile();
+      if (_user != null) {
+        _repository.updateOnlinePresence(_user!.uid, true);
+      }
       _resolveStatus();
       _errorMessage = null;
     } catch (error) {
@@ -53,6 +76,35 @@ class AuthController extends ChangeNotifier {
     _setLoading(true);
     try {
       _user = await _repository.signInWithGoogle();
+      if (_user != null) {
+        _repository.updateOnlinePresence(_user!.uid, true);
+      }
+      _resolveStatus();
+      _errorMessage = null;
+    } catch (error) {
+      _errorMessage = _messageFromError(error);
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
+    _setLoading(true);
+    try {
+      _user = await _repository.signInWithEmailAndPassword(email, password);
+      _resolveStatus();
+      _errorMessage = null;
+    } catch (error) {
+      _errorMessage = _messageFromError(error);
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> createUserWithEmailAndPassword(String email, String password, String username) async {
+    _setLoading(true);
+    try {
+      _user = await _repository.createUserWithEmailAndPassword(email, password, username);
       _resolveStatus();
       _errorMessage = null;
     } catch (error) {
@@ -101,6 +153,9 @@ class AuthController extends ChangeNotifier {
   Future<void> signOut() async {
     _setLoading(true);
     try {
+      if (_user != null) {
+        await _repository.updateOnlinePresence(_user!.uid, false);
+      }
       await _repository.signOut();
       _user = null;
       _status = AuthFlowStatus.signedOut;

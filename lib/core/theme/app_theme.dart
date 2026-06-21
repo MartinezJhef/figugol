@@ -3,42 +3,44 @@ import 'package:flutter/material.dart';
 class AppTheme {
   const AppTheme._();
 
-  static const primaryRed = Color(0xFFD22630);      // Canada Red
-  static const secondaryGreen = Color(0xFF006847);   // Mexico Green
-  static const accentBlue = Color(0xFF0A369D);      // USA Blue
-  static const darkText = Color(0xFF111827);        // Dark slate/charcoal
-  static const borderLine = Color(0xFFE5E7EB);      // Border color
-  static const bgGrey = Color(0xFFF9FAFB);          // Scaffold background
+  static const primaryBrand = Color(0xFF4ADE80);    // Vibrant Neon Green (from images)
+  static const secondaryBrand = Color(0xFFE3242B);  // Red
+  static const accentBrand = Color(0xFF22C55E);     // Darker Neon Green
+  static const lightText = Color(0xFFF9FAFB);       // Light text for dark mode
+  static const borderLine = Color(0xFF2E3D34);      // Dark green-grey border
+  static const bgDark = Color(0xFF0A0F0D);          // Very dark greenish black (Image background)
+  static const cardDark = Color(0xFF161F1A);        // Slightly lighter card background
 
-  static ThemeData get light {
+  static ThemeData get dark {
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: primaryRed,
-      primary: primaryRed,
-      secondary: secondaryGreen,
-      tertiary: accentBlue,
-      surface: bgGrey,
-      onSurface: darkText,
+      brightness: Brightness.dark,
+      seedColor: primaryBrand,
+      primary: primaryBrand,
+      secondary: secondaryBrand,
+      tertiary: accentBrand,
+      surface: bgDark,
+      onSurface: lightText,
     );
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: bgDark,
       fontFamily: 'Roboto',
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        foregroundColor: darkText,
+        backgroundColor: bgDark,
+        foregroundColor: lightText,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
-          color: darkText,
+          color: lightText,
           fontSize: 22,
           fontWeight: FontWeight.w900,
         ),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: Colors.white,
+        color: cardDark,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24), // Modern rounded corners (shapes from image)
           side: const BorderSide(color: borderLine),
@@ -46,17 +48,17 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: darkText,
+        backgroundColor: cardDark,
         contentTextStyle: const TextStyle(
-          color: Colors.white,
+          color: lightText,
           fontWeight: FontWeight.w700,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: primaryRed,
-          foregroundColor: Colors.white,
+          backgroundColor: const Color(0xFFF3F4F6), // Light grey/white like the "See More" button
+          foregroundColor: const Color(0xFF111827), // Dark text
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16), // Rounded button
@@ -66,8 +68,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryRed,
-          foregroundColor: Colors.white,
+          backgroundColor: const Color(0xFFF3F4F6),
+          foregroundColor: const Color(0xFF111827),
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -77,9 +79,9 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primaryRed,
+          foregroundColor: lightText,
           minimumSize: const Size.fromHeight(52),
-          side: const BorderSide(color: primaryRed, width: 1.4),
+          side: const BorderSide(color: borderLine, width: 1.4),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -87,21 +89,26 @@ class AppTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: Colors.white,
-        indicatorColor: const Color(0xFFF3F4F6),
+        backgroundColor: cardDark,
+        indicatorColor: primaryBrand.withValues(alpha: 0.3),
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
-            color: states.contains(WidgetState.selected) ? primaryRed : darkText,
+            color: states.contains(WidgetState.selected) ? accentBrand : lightText,
             fontSize: 12,
             fontWeight: states.contains(WidgetState.selected)
                 ? FontWeight.w900
                 : FontWeight.w700,
           ),
         ),
+        iconTheme: WidgetStateProperty.resolveWith(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected) ? accentBrand : lightText,
+          ),
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: cardDark,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16), // Rounded inputs
           borderSide: const BorderSide(color: borderLine),
@@ -112,7 +119,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: primaryRed, width: 1.6),
+          borderSide: const BorderSide(color: primaryBrand, width: 1.6),
         ),
       ),
     );

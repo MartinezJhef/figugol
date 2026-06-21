@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:figugol/features/stickers/presentation/widgets/shared_album_widgets.dart';
+
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
@@ -17,12 +19,9 @@ String _filterLabel(StickerFilter filter) {
   };
 }
 
-Color _readableTextColor(Color color) {
-  return color.computeLuminance() > 0.55 ? AppTheme.darkText : Colors.white;
-}
 
 Color _accentTextColor(Color color) {
-  return color.computeLuminance() > 0.55 ? AppTheme.darkText : color;
+  return color.computeLuminance() > 0.55 ? AppTheme.lightText : color;
 }
 
 class StickersScreen extends StatelessWidget {
@@ -30,20 +29,7 @@ class StickersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userId = context.select<AuthController, String?>(
-      (controller) => controller.user?.uid,
-    );
-
-    if (userId == null) {
-      return const Scaffold(
-        body: Center(child: Text('Inicia sesión para ver tus figuritas.')),
-      );
-    }
-
-    return ChangeNotifierProvider(
-      create: (_) => StickersController(userId: userId),
-      child: const _StickersView(),
-    );
+    return const _StickersView();
   }
 }
 
@@ -55,6 +41,7 @@ class _StickersView extends StatelessWidget {
     final controller = context.watch<StickersController>();
     final cart = context.watch<TradeCartController>();
     final stickers = controller.visibleStickers;
+    final countriesList = controller.visibleSections.where((s) => s.id != StickersController.allSectionId).toList();
 
     _showErrorIfNeeded(context, controller);
     _showCartValidationIfNeeded(context, cart);
@@ -66,9 +53,13 @@ class _StickersView extends StatelessWidget {
           _CartCounterButton(
             totalItems: cart.totalItems,
             onPressed: () {
+              final stickersController = context.read<StickersController>();
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (_) => const TradeCartScreen(),
+                  builder: (_) => ChangeNotifierProvider.value(
+                    value: stickersController,
+                    child: const TradeCartScreen(),
+                  ),
                 ),
               );
             },
@@ -83,11 +74,22 @@ class _StickersView extends StatelessWidget {
                 ),
               ),
             ),
+            if (!controller.isCatalogLoaded)
+            const Expanded(
+              child: Center(
+                child: SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2.4),
+                ),
+              ),
+            ),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
+      body: !controller.isCatalogLoaded
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: Column(
+                children: [
             if (!controller.hasRegisteredStickers)
               const Padding(
                 padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -95,36 +97,58 @@ class _StickersView extends StatelessWidget {
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: _CountrySearchField(onChanged: controller.setCountryQuery),
+              child: CountrySearchField(onChanged: controller.setSearchQuery),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 10, 10, 10),
               child: Row(
                 children: [
                   Expanded(
-                    child: _AlbumSections(
+                    child: AlbumSections(
                       sections: controller.visibleSections,
                       selectedSectionId: controller.selectedSectionId,
                       onChanged: controller.setSection,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _StickerFilterMenu(
-                    selectedFilter: controller.filter,
-                    onChanged: controller.setFilter,
-                  ),
+                  if (controller.selectedSectionId != StickersController.allSectionId || controller.filter != StickerFilter.all)
+                    _StickerFilterMenu(
+                      selectedFilter: controller.filter,
+                      onChanged: controller.setFilter,
+                    ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
-              child: _SelectedFilterSummary(
-                section: controller.selectedSection,
-                selectedFilter: controller.filter,
+            if (controller.selectedSectionId != StickersController.allSectionId || controller.filter != StickerFilter.all)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
+                child: _SelectedFilterSummary(
+                  section: controller.selectedSection,
+                  selectedFilter: controller.filter,
+                ),
               ),
-            ),
             Expanded(
-              child: stickers.isEmpty
+              child: (controller.selectedSectionId == StickersController.allSectionId && controller.searchQuery.isEmpty && controller.filter == StickerFilter.all)
+                ? countriesList.isEmpty
+                    ? const Center(child: Text('No se encontraron países.'))
+                    : GridView.builder(
+                        padding: const EdgeInsets.fromLTRB(16, 6, 16, 20),
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 200,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 1.1,
+                        ),
+                        itemCount: countriesList.length,
+                        itemBuilder: (context, index) {
+                          final section = countriesList[index];
+                          return CountryCard(
+                            section: section,
+                            onTap: () => controller.setSection(section.id),
+                          );
+                        },
+                      )
+                : stickers.isEmpty
                   ? const _StickerFilterEmptyState()
                   : GridView.builder(
                       padding: const EdgeInsets.fromLTRB(16, 6, 16, 20),
@@ -209,7 +233,7 @@ class _StickerEmptyBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFFEFF6FF),
+      color: AppTheme.cardDark,
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Row(
@@ -220,7 +244,7 @@ class _StickerEmptyBanner extends StatelessWidget {
               child: Text(
                 'Aún no registraste figuritas. Toca + en una card para sumar.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.darkText,
+                  color: AppTheme.lightText,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -264,137 +288,6 @@ class _CartCounterButton extends StatelessWidget {
         isLabelVisible: totalItems > 0,
         label: Text('$totalItems'),
         child: const Icon(Icons.shopping_basket_rounded),
-      ),
-    );
-  }
-}
-
-class _CountrySearchField extends StatelessWidget {
-  const _CountrySearchField({required this.onChanged});
-
-  final ValueChanged<String> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      onChanged: onChanged,
-      textInputAction: TextInputAction.search,
-      decoration: const InputDecoration(
-        hintText: 'Buscar país',
-        prefixIcon: Icon(Icons.search_rounded),
-      ),
-    );
-  }
-}
-
-class _AlbumSections extends StatelessWidget {
-  const _AlbumSections({
-    required this.sections,
-    required this.selectedSectionId,
-    required this.onChanged,
-  });
-
-  final List<StickerAlbumSection> sections;
-  final String selectedSectionId;
-  final ValueChanged<String> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    if (sections.isEmpty) {
-      return const Center(child: Text('No se encontró ese país.'));
-    }
-
-    return SizedBox(
-      height: 48,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: sections.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final section = sections[index];
-          final isSelected = section.id == selectedSectionId;
-          return _AlbumSectionChip(
-            section: section,
-            isSelected: isSelected,
-            onTap: () => onChanged(section.id),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _AlbumSectionChip extends StatelessWidget {
-  const _AlbumSectionChip({
-    required this.section,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final StickerAlbumSection section;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final textColor = _readableTextColor(section.primaryColor);
-
-    return ActionChip(
-      onPressed: onTap,
-      side: BorderSide(
-        color: isSelected ? section.secondaryColor : AppTheme.borderLine,
-        width: isSelected ? 2 : 1,
-      ),
-      backgroundColor: isSelected ? section.primaryColor : Colors.white,
-      avatar: _FlagDots(
-        primaryColor: section.primaryColor,
-        secondaryColor: section.secondaryColor,
-      ),
-      label: Text(section.label, maxLines: 1, overflow: TextOverflow.ellipsis),
-      labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-        color: isSelected ? textColor : AppTheme.darkText,
-        fontWeight: FontWeight.w900,
-      ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    );
-  }
-}
-
-class _FlagDots extends StatelessWidget {
-  const _FlagDots({required this.primaryColor, required this.secondaryColor});
-
-  final Color primaryColor;
-  final Color secondaryColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 22,
-      height: 22,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: primaryColor,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.borderLine),
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Container(
-              width: 12,
-              height: 12,
-              decoration: BoxDecoration(
-                color: secondaryColor,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 1.4),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -458,10 +351,20 @@ class _SelectedFilterSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _FlagStrip(
-          primaryColor: section.primaryColor,
-          secondaryColor: section.secondaryColor,
-        ),
+        section.flagAsset != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.asset(
+                  section.flagAsset!,
+                  width: 36,
+                  height: 20,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : _FlagStrip(
+                primaryColor: section.primaryColor,
+                secondaryColor: section.secondaryColor,
+              ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -527,11 +430,10 @@ class _StickerCard extends StatelessWidget {
   final VoidCallback onAddToTrade;
 
   bool get _isMissing => quantity == 0;
-  bool get _canAddToTrade => quantity > 1 && cartQuantity < quantity - 1;
+  bool get _canAddToTrade => quantity > 0 && cartQuantity < quantity;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final countryTextColor = _accentTextColor(section.primaryColor);
 
     return GestureDetector(
@@ -539,14 +441,21 @@ class _StickerCard extends StatelessWidget {
       onDoubleTap: onDoubleTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
-        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: _isMissing
               ? Color.alphaBlend(
                   section.primaryColor.withAlpha(20),
-                  Colors.white,
+                  AppTheme.cardDark,
                 )
-              : Colors.white,
+              : AppTheme.cardDark,
+          image: DecorationImage(
+            image: const AssetImage('assets/images/app_bg.png'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(alpha: _isMissing ? 0.75 : 0.6),
+              BlendMode.darken,
+            ),
+          ),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? section.secondaryColor : AppTheme.borderLine,
@@ -561,113 +470,100 @@ class _StickerCard extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                _StickerNumber(
-                  code: sticker.catalogCode,
-                  color: section.secondaryColor,
-                ),
-                const Spacer(),
-                IconButton.filled(
-                  tooltip: 'Sumar figurita',
-                  onPressed: onDoubleTap,
-                  icon: const Icon(Icons.add_rounded, size: 18),
-                  constraints: const BoxConstraints.tightFor(
-                    width: 32,
-                    height: 32,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              child: Row(
+                children: [
+                  const Spacer(),
+                  IconButton.filled(
+                    tooltip: 'Sumar figurita',
+                    onPressed: onDoubleTap,
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    constraints: const BoxConstraints.tightFor(
+                      width: 32,
+                      height: 32,
+                    ),
+                    padding: EdgeInsets.zero,
+                    style: IconButton.styleFrom(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
                   ),
-                  padding: EdgeInsets.zero,
-                  style: IconButton.styleFrom(
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  const SizedBox(width: 4),
+                  IconButton.filled(
+                    tooltip: 'Restar figurita',
+                    onPressed: quantity == 0 ? null : onDecrement,
+                    icon: const Icon(Icons.remove_rounded, size: 18),
+                    constraints: const BoxConstraints.tightFor(
+                      width: 32,
+                      height: 32,
+                    ),
+                    padding: EdgeInsets.zero,
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                IconButton.filledTonal(
-                  tooltip: 'Restar figurita',
-                  onPressed: quantity == 0 ? null : onDecrement,
-                  icon: const Icon(Icons.remove_rounded, size: 18),
-                  constraints: const BoxConstraints.tightFor(
-                    width: 32,
-                    height: 32,
-                  ),
-                  padding: EdgeInsets.zero,
-                  style: IconButton.styleFrom(
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 12),
             Expanded(
-              child: sticker.imageUrl == null
-                  ? Align(
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.style_rounded,
-                        color: _isMissing
-                            ? const Color(0xFF8A968F)
-                            : section.primaryColor,
-                        size: 46,
-                      ),
+              child: sticker.imageUrl != null && sticker.imageUrl!.startsWith('http')
+                  ? Image.network(
+                      sticker.imageUrl!,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Center(child: Icon(Icons.broken_image, color: Colors.grey)),
                     )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
-                      child: Image.asset(
-                        sticker.imageUrl!,
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, _, _) => Icon(
-                          Icons.broken_image_outlined,
-                          color: section.primaryColor,
-                          size: 46,
+                  : sticker.imageUrl != null
+                      ? Image.asset(sticker.imageUrl!, fit: BoxFit.contain)
+                      : const Center(child: Icon(Icons.image_not_supported, color: Colors.grey)),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _QuantityBadge(
+                    quantity: quantity,
+                    color: section.primaryColor,
+                    textColor: countryTextColor,
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F4F6), // Fondo claro
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextButton(
+                      onPressed: _canAddToTrade ? onAddToTrade : null,
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.black87,
+                        disabledForegroundColor: Colors.black45,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
+                      child: const Text('Agregar al intercambio'),
                     ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              sticker.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.titleSmall?.copyWith(
-                color: AppTheme.darkText,
-                fontWeight: FontWeight.w900,
-                height: 1.12,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              section.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.bodySmall?.copyWith(
-                color: const Color(0xFF6B7280),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 10),
-            _QuantityBadge(
-              quantity: quantity,
-              color: section.primaryColor,
-              textColor: countryTextColor,
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: _canAddToTrade ? onAddToTrade : null,
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(44),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  textStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
                   ),
-                ),
-                child: const Text('Agregar al intercambio'),
+                ],
               ),
             ),
           ],
@@ -677,32 +573,6 @@ class _StickerCard extends StatelessWidget {
   }
 }
 
-class _StickerNumber extends StatelessWidget {
-  const _StickerNumber({required this.code, required this.color});
-
-  final String code;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 62,
-      height: 34,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Text(
-        code,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: _accentTextColor(color),
-          fontWeight: FontWeight.w900,
-        ),
-      ),
-    );
-  }
-}
 
 class _QuantityBadge extends StatelessWidget {
   const _QuantityBadge({
@@ -723,9 +593,7 @@ class _QuantityBadge extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: isMissing
-            ? const Color(0xFFDCE2DD)
-            : Color.alphaBlend(color.withAlpha(41), Colors.white),
+        color: const Color(0xFF4B5563), // Lighter tone for missing or present
         borderRadius: BorderRadius.circular(14),
       ),
       child: Text(
@@ -734,10 +602,11 @@ class _QuantityBadge extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: isMissing ? const Color(0xFF6B7280) : textColor,
+          color: Colors.white70,
           fontWeight: FontWeight.w900,
         ),
       ),
     );
   }
 }
+

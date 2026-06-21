@@ -5,8 +5,10 @@ import '../../../auth/data/models/app_user.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../location/presentation/pages/location_confirm_screen.dart';
 import '../../../marketplace/presentation/pages/marketplace_screen.dart';
-import '../../../offers/presentation/pages/nearby_offers_screen.dart';
+import '../../../stickers/presentation/pages/album_screen.dart';
 import '../../../stickers/presentation/pages/stickers_screen.dart';
+import '../../../stickers/presentation/pages/stickers_screen.dart';
+import '../../../stickers/presentation/controllers/stickers_controller.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 
@@ -30,15 +32,22 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthController>().user;
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
+
     final pages = [
       HomeScreen(onOpenTab: _selectTab),
       const StickersScreen(),
-      NearbyOffersScreen(),
+      const AlbumScreen(),
       const MarketplaceScreen(),
       const ProfileScreen(),
     ];
 
-    return Scaffold(
+    return ChangeNotifierProvider(
+      create: (_) => StickersController(userId: user.uid),
+      child: Scaffold(
       body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
@@ -52,12 +61,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           NavigationDestination(
             icon: Icon(Icons.style_outlined),
             selectedIcon: Icon(Icons.style_rounded),
-            label: 'Mis figuritas',
+            label: 'Repetidas',
           ),
           NavigationDestination(
-            icon: Icon(Icons.travel_explore_outlined),
-            selectedIcon: Icon(Icons.travel_explore_rounded),
-            label: 'Ofertas',
+            icon: Icon(Icons.book_outlined),
+            selectedIcon: Icon(Icons.book_rounded),
+            label: 'Mi Álbum',
           ),
           NavigationDestination(
             icon: Icon(Icons.storefront_outlined),
@@ -71,7 +80,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   void _selectTab(int index) {

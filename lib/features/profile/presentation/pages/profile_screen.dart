@@ -21,7 +21,7 @@ class ProfileScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: AppTheme.secondaryGreen,
+                color: AppTheme.secondaryBrand,
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Row(
@@ -36,7 +36,7 @@ class ProfileScreen extends StatelessWidget {
                         ? const Icon(
                             Icons.person_rounded,
                             size: 38,
-                            color: AppTheme.secondaryGreen,
+                            color: AppTheme.secondaryBrand,
                           )
                         : null,
                   ),
@@ -125,7 +125,7 @@ class _ProfileRow extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            Icon(icon, color: AppTheme.primaryRed),
+            Icon(icon, color: AppTheme.primaryBrand),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -142,7 +142,7 @@ class _ProfileRow extends StatelessWidget {
                   Text(
                     value,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppTheme.darkText,
+                      color: AppTheme.lightText,
                       fontWeight: FontWeight.w800,
                     ),
                   ),

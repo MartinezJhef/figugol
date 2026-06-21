@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/figugol_action_button.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 
@@ -12,7 +13,6 @@ class CompleteProfileScreen extends StatefulWidget {
 }
 
 class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _exchangeNameController = TextEditingController();
 
   @override
@@ -21,100 +21,16 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final authController = context.watch<AuthController>();
-    final textTheme = Theme.of(context).textTheme;
-
-    _showErrorIfNeeded(context, authController);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Completa tu perfil'),
-        actions: [
-          IconButton(
-            tooltip: 'Cerrar sesión',
-            onPressed: authController.isLoading ? null : authController.signOut,
-            icon: const Icon(Icons.logout_rounded),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 28),
-                Icon(
-                  Icons.handshake_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 48,
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  'Elige tu nombre para intercambios',
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF111827),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Este nombre será visible cuando propongas intercambios de figuritas.',
-                  style: textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF6B7280),
-                    height: 1.35,
-                  ),
-                ),
-                const SizedBox(height: 28),
-                TextFormField(
-                  controller: _exchangeNameController,
-                  textInputAction: TextInputAction.done,
-                  enabled: !authController.isLoading,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre para intercambios',
-                    hintText: 'Ej. Coleccionista Lima',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    final trimmedValue = value?.trim() ?? '';
-                    if (trimmedValue.isEmpty) {
-                      return 'Ingresa un nombre para intercambios.';
-                    }
-                    if (trimmedValue.length < 3) {
-                      return 'Usa al menos 3 caracteres.';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (_) => _submit(authController),
-                ),
-                const SizedBox(height: 22),
-                FigugolActionButton(
-                  label: authController.isLoading
-                      ? 'Guardando...'
-                      : 'Guardar perfil',
-                  icon: Icons.check_rounded,
-                  onPressed: authController.isLoading
-                      ? null
-                      : () => _submit(authController),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   void _submit(AuthController authController) {
-    if (!_formKey.currentState!.validate()) {
+    final trimmedValue = _exchangeNameController.text.trim();
+    if (trimmedValue.isEmpty || trimmedValue.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ingresa un nombre de usuario válido (min. 3 caracteres).')),
+      );
       return;
     }
 
-    authController.completeProfile(_exchangeNameController.text);
+    authController.completeProfile(trimmedValue);
   }
 
   void _showErrorIfNeeded(BuildContext context, AuthController controller) {
@@ -132,5 +48,148 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       );
       controller.clearError();
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authController = context.watch<AuthController>();
+    final textTheme = Theme.of(context).textTheme;
+
+    _showErrorIfNeeded(context, authController);
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/auth_bg.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          
+          // Back/Logout Button
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 10,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+              onPressed: authController.isLoading ? null : authController.signOut,
+              tooltip: 'Cerrar sesión',
+            ),
+          ),
+
+          // Welcome text or context
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 60,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: [
+                Text(
+                  'Falta poco...',
+                  style: textTheme.displaySmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom Sheet Form
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(32),
+                  topRight: Radius.circular(32),
+                ),
+              ),
+              padding: const EdgeInsets.only(
+                left: 32,
+                right: 32,
+                top: 40,
+                bottom: 40,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Completa tu perfil',
+                      style: textTheme.titleLarge?.copyWith(
+                        color: AppTheme.lightText,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Elige tu nombre para intercambios.',
+                      textAlign: TextAlign.center,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFF6B7280),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    
+                    // Username Field
+                    _CustomTextField(
+                      controller: _exchangeNameController,
+                      icon: Icons.person_outline_rounded,
+                      hintText: 'Nombre de usuario',
+                    ),
+                    const SizedBox(height: 32),
+                    
+                    // Submit Button
+                    FigugolActionButton(
+                      label: authController.isLoading ? 'Guardando...' : 'Guardar perfil',
+                      onPressed: authController.isLoading ? null : () => _submit(authController),
+                      style: FigugolActionButtonStyle.primary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CustomTextField extends StatelessWidget {
+  const _CustomTextField({
+    required this.controller,
+    required this.icon,
+    required this.hintText,
+  });
+
+  final TextEditingController controller;
+  final IconData icon;
+  final String hintText;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: Colors.grey.shade600),
+        hintText: hintText,
+        hintStyle: TextStyle(color: Colors.grey.shade400),
+        filled: false,
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFFE5E7EB)),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.accentBrand, width: 2),
+        ),
+      ),
+      onSubmitted: (_) {},
+    );
   }
 }

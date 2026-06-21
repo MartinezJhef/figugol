@@ -6,7 +6,7 @@ import '../../../../core/services/connectivity_service.dart';
 import '../../data/models/sticker.dart';
 import '../../data/models/user_sticker.dart';
 import '../../data/repositories/stickers_repository.dart';
-import '../../data/sources/demo_sticker_catalog.dart';
+
 
 enum StickerFilter { all, owned, duplicates, missing }
 
@@ -24,6 +24,8 @@ class StickerAlbumSection {
   final Color primaryColor;
   final Color secondaryColor;
   final String? team;
+
+  String? get flagAsset => id == 'all' ? null : 'assets/paises/$id.png';
 }
 
 class StickersController extends ChangeNotifier {
@@ -31,6 +33,18 @@ class StickersController extends ChangeNotifier {
     required this.userId,
     StickersRepository? stickersRepository,
   }) : _stickersRepository = stickersRepository ?? StickersRepository() {
+    _catalogSubscription = _stickersRepository.watchCatalog().listen(
+      (catalog) {
+        _stickers = catalog;
+        _isCatalogLoaded = true;
+        notifyListeners();
+      },
+      onError: (_) {
+        _errorMessage = 'No se pudo cargar el catálogo de figuritas.';
+        notifyListeners();
+      },
+    );
+
     _subscription = _stickersRepository
         .watchUserStickers(userId)
         .listen(
@@ -57,7 +71,11 @@ class StickersController extends ChangeNotifier {
   final StickersRepository _stickersRepository;
   StreamSubscription<Map<String, UserSticker>>? _subscription;
 
-  final List<Sticker> stickers = demoStickerCatalog;
+  StreamSubscription<List<Sticker>>? _catalogSubscription;
+  List<Sticker> _stickers = [];
+  bool _isCatalogLoaded = false;
+  
+  List<Sticker> get stickers => _stickers;
   static const allSectionId = 'all';
   static const sections = <StickerAlbumSection>[
     StickerAlbumSection(
@@ -67,88 +85,333 @@ class StickersController extends ChangeNotifier {
       secondaryColor: Color(0xFF0A369D),
     ),
     StickerAlbumSection(
+      id: 'canada',
+      label: 'Canada',
+      team: 'Canada',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'estados_unidos',
+      label: 'Estados Unidos',
+      team: 'Estados Unidos',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
       id: 'mexico',
-      label: 'México',
+      label: 'Mexico',
       team: 'Mexico',
       primaryColor: Color(0xFF006847),
-      secondaryColor: Color(0xFFCE1126),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'argentina',
+      label: 'Argentina',
+      team: 'Argentina',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'brasil',
+      label: 'Brasil',
+      team: 'Brasil',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'colombia',
+      label: 'Colombia',
+      team: 'Colombia',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'ecuador',
+      label: 'Ecuador',
+      team: 'Ecuador',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'paraguay',
+      label: 'Paraguay',
+      team: 'Paraguay',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
     ),
     StickerAlbumSection(
       id: 'uruguay',
       label: 'Uruguay',
       team: 'Uruguay',
-      primaryColor: Color(0xFF5BC2E7),
-      secondaryColor: Color(0xFFFFD100),
-    ),
-    StickerAlbumSection(
-      id: 'uzbekistan',
-      label: 'Uzbekistán',
-      team: 'Uzbekistan',
-      primaryColor: Color(0xFF0099B5),
-      secondaryColor: Color(0xFF1EB53A),
-    ),
-    StickerAlbumSection(
-      id: 'canada',
-      label: 'Canada',
-      team: 'Equipo Costero',
-      primaryColor: Color(0xFFD52B1E),
-      secondaryColor: Color(0xFFFFFFFF),
-    ),
-    StickerAlbumSection(
-      id: 'estados_unidos',
-      label: 'Estados Unidos',
-      team: 'Equipo Selva',
-      primaryColor: Color(0xFF3C3B6E),
-      secondaryColor: Color(0xFFB22234),
-    ),
-    StickerAlbumSection(
-      id: 'argentina',
-      label: 'Argentina',
-      team: 'Equipo Austral',
-      primaryColor: Color(0xFF75AADB),
-      secondaryColor: Color(0xFFFFFFFF),
-    ),
-    StickerAlbumSection(
-      id: 'brasil',
-      label: 'Brasil',
-      team: 'Equipo Norte',
-      primaryColor: Color(0xFF009B3A),
-      secondaryColor: Color(0xFFFFDF00),
-    ),
-    StickerAlbumSection(
-      id: 'espana',
-      label: 'Espana',
-      team: 'Equipo Plata',
-      primaryColor: Color(0xFFAA151B),
-      secondaryColor: Color(0xFFF1BF00),
-    ),
-    StickerAlbumSection(
-      id: 'francia',
-      label: 'Francia',
-      team: 'Equipo Dorado',
-      primaryColor: Color(0xFF0055A4),
-      secondaryColor: Color(0xFFEF4135),
-    ),
-    StickerAlbumSection(
-      id: 'inglaterra',
-      label: 'Inglaterra',
-      team: 'Equipo Oceano',
-      primaryColor: Color(0xFFFFFFFF),
-      secondaryColor: Color(0xFFC8102E),
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
     ),
     StickerAlbumSection(
       id: 'alemania',
       label: 'Alemania',
-      team: 'Equipo Capital',
-      primaryColor: Color(0xFF000000),
-      secondaryColor: Color(0xFFFFCC00),
+      team: 'Alemania',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'austria',
+      label: 'Austria',
+      team: 'Austria',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'belgica',
+      label: 'Belgica',
+      team: 'Belgica',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'bosnia_y_herzegovina',
+      label: 'Bosnia y Herzegovina',
+      team: 'Bosnia y Herzegovina',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'croacia',
+      label: 'Croacia',
+      team: 'Croacia',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'escocia',
+      label: 'Escocia',
+      team: 'Escocia',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'espana',
+      label: 'Espana',
+      team: 'Espana',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'francia',
+      label: 'Francia',
+      team: 'Francia',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'noruega',
+      label: 'Noruega',
+      team: 'Noruega',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'paises_bajos',
+      label: 'Paises Bajos',
+      team: 'Paises Bajos',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'portugal',
+      label: 'Portugal',
+      team: 'Portugal',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'republica_checa',
+      label: 'Republica Checa',
+      team: 'Republica Checa',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'suecia',
+      label: 'Suecia',
+      team: 'Suecia',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'suiza',
+      label: 'Suiza',
+      team: 'Suiza',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'turquia',
+      label: 'Turquia',
+      team: 'Turquia',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'argelia',
+      label: 'Argelia',
+      team: 'Argelia',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'cabo_verde',
+      label: 'Cabo Verde',
+      team: 'Cabo Verde',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'costa_de_marfil',
+      label: 'Costa de Marfil',
+      team: 'Costa de Marfil',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'egipto',
+      label: 'Egipto',
+      team: 'Egipto',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'ghana',
+      label: 'Ghana',
+      team: 'Ghana',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'marruecos',
+      label: 'Marruecos',
+      team: 'Marruecos',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'rd_congo',
+      label: 'RD Congo',
+      team: 'RD Congo',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'senegal',
+      label: 'Senegal',
+      team: 'Senegal',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'sudafrica',
+      label: 'Sudafrica',
+      team: 'Sudafrica',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'tunez',
+      label: 'Tunez',
+      team: 'Tunez',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'arabia_saudi',
+      label: 'Arabia Saudi',
+      team: 'Arabia Saudi',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'australia',
+      label: 'Australia',
+      team: 'Australia',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'catar',
+      label: 'Catar',
+      team: 'Catar',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'corea_del_sur',
+      label: 'Corea del Sur',
+      team: 'Corea del Sur',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'irak',
+      label: 'Irak',
+      team: 'Irak',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
     ),
     StickerAlbumSection(
       id: 'japon',
       label: 'Japon',
-      team: 'Equipo Granate',
-      primaryColor: Color(0xFFFFFFFF),
-      secondaryColor: Color(0xFFBC002D),
+      team: 'Japon',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'jordania',
+      label: 'Jordania',
+      team: 'Jordania',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'ri_de_iran',
+      label: 'RI de Iran',
+      team: 'RI de Iran',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'uzbekistan',
+      label: 'Uzbekistan',
+      team: 'Uzbekistan',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'curazao',
+      label: 'Curazao',
+      team: 'Curazao',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'haiti',
+      label: 'Haiti',
+      team: 'Haiti',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'panama',
+      label: 'Panama',
+      team: 'Panama',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
+    ),
+    StickerAlbumSection(
+      id: 'nueva_zelanda',
+      label: 'Nueva Zelanda',
+      team: 'Nueva Zelanda',
+      primaryColor: Color(0xFF006847),
+      secondaryColor: Color(0xFF0A369D),
     ),
   ];
 
@@ -156,19 +419,20 @@ class StickersController extends ChangeNotifier {
   final Set<String> _selectedStickerIds = {};
   StickerFilter _filter = StickerFilter.all;
   String _selectedSectionId = allSectionId;
-  String _countryQuery = '';
+  String _searchQuery = '';
   String? _errorMessage;
   int _savingOperations = 0;
   final Map<String, int> _pendingSaveCounts = {};
 
   StickerFilter get filter => _filter;
+  String get searchQuery => _searchQuery;
   String get selectedSectionId => _selectedSectionId;
   StickerAlbumSection get selectedSection => sections.firstWhere(
     (section) => section.id == _selectedSectionId,
     orElse: () => sections.first,
   );
   List<StickerAlbumSection> get visibleSections {
-    final query = _countryQuery.trim().toLowerCase();
+    final query = _searchQuery.trim().toLowerCase();
     if (query.isEmpty) {
       return sections;
     }
@@ -179,26 +443,40 @@ class StickersController extends ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
   bool get isSaving => _savingOperations > 0;
-  bool get hasLoadedCollection => _userStickers.isNotEmpty;
+  bool get isCatalogLoaded => _isCatalogLoaded;
+  bool get hasLoadedCollection => _isCatalogLoaded;
   bool get hasRegisteredStickers =>
       _userStickers.values.any((sticker) => sticker.quantity > 0);
 
   List<Sticker> get visibleStickers {
+    final query = _searchQuery.trim().toLowerCase();
     return stickers.where((sticker) {
       final quantity = quantityFor(sticker.id);
       final sectionMatches =
           selectedSection.team == null || selectedSection.team == sticker.team;
+          
+      final matchesName = query.isEmpty || sticker.name.toLowerCase().contains(query);
+      final matchesTeam = query.isEmpty || sticker.team.toLowerCase().contains(query);
+      
+      if (query.isNotEmpty && !matchesName && !matchesTeam) {
+        return false;
+      }
+      
       return switch (_filter) {
         StickerFilter.all => sectionMatches,
-        StickerFilter.owned => sectionMatches && quantity > 0,
-        StickerFilter.duplicates => sectionMatches && quantity > 1,
-        StickerFilter.missing => sectionMatches && quantity == 0,
+        StickerFilter.owned => sectionMatches && isPasted(sticker.id),
+        StickerFilter.duplicates => sectionMatches && quantity > 0,
+        StickerFilter.missing => sectionMatches && !isPasted(sticker.id),
       };
     }).toList();
   }
 
   int quantityFor(String stickerId) {
     return _userStickers[stickerId]?.quantity ?? 0;
+  }
+
+  bool isPasted(String stickerId) {
+    return _userStickers[stickerId]?.isPasted ?? false;
   }
 
   bool isSelected(String stickerId) => _selectedStickerIds.contains(stickerId);
@@ -213,8 +491,8 @@ class StickersController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCountryQuery(String query) {
-    _countryQuery = query;
+  void setSearchQuery(String query) {
+    _searchQuery = query;
     notifyListeners();
   }
 
@@ -233,7 +511,7 @@ class StickersController extends ChangeNotifier {
   }
 
   Future<void> incrementQuantity(String stickerId) async {
-    await _saveQuantity(stickerId, quantityFor(stickerId) + 1);
+    await _saveStickerState(stickerId, quantityFor(stickerId) + 1, isPasted(stickerId));
   }
 
   Future<void> decrementQuantity(String stickerId) async {
@@ -241,7 +519,19 @@ class StickersController extends ChangeNotifier {
     if (currentQuantity == 0) {
       return;
     }
-    await _saveQuantity(stickerId, currentQuantity - 1);
+    await _saveStickerState(stickerId, currentQuantity - 1, isPasted(stickerId));
+  }
+
+  Future<void> decreaseQuantityBy(String stickerId, int amount) async {
+    final currentQuantity = quantityFor(stickerId);
+    if (currentQuantity < amount) {
+      return;
+    }
+    await _saveStickerState(stickerId, currentQuantity - amount, isPasted(stickerId));
+  }
+
+  Future<void> togglePasteSticker(String stickerId) async {
+    await _saveStickerState(stickerId, quantityFor(stickerId), !isPasted(stickerId));
   }
 
   void clearError() {
@@ -249,7 +539,7 @@ class StickersController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _saveQuantity(String stickerId, int quantity) async {
+  Future<void> _saveStickerState(String stickerId, int quantity, bool isPasted) async {
     final nextQuantity = quantity < 0 ? 0 : quantity;
     final previousSticker = _userStickers[stickerId];
     final now = DateTime.now();
@@ -258,6 +548,7 @@ class StickersController extends ChangeNotifier {
       stickerId: stickerId,
       quantity: nextQuantity,
       updatedAt: now,
+      isPasted: isPasted,
     );
 
     _userStickers = {..._userStickers, stickerId: nextSticker};
@@ -311,6 +602,7 @@ class StickersController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _catalogSubscription?.cancel();
     _subscription?.cancel();
     super.dispose();
   }

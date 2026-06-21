@@ -4,13 +4,6 @@ class LocationService {
   const LocationService();
 
   Future<Position> requestCurrentPosition() async {
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw const LocationServiceException(
-        'Activa la ubicación del dispositivo para continuar.',
-      );
-    }
-
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -28,12 +21,23 @@ class LocationService {
       );
     }
 
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw const LocationServiceException(
+        'Activa la ubicación del dispositivo para continuar.',
+      );
+    }
+
     return Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
         timeLimit: Duration(seconds: 12),
       ),
     );
+  }
+
+  Future<bool> openSettings() {
+    return Geolocator.openLocationSettings();
   }
 }
 

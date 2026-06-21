@@ -82,6 +82,10 @@ class LocationController extends ChangeNotifier {
     }
   }
 
+  Future<bool> openLocationSettings() async {
+    return _locationService.openSettings();
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();

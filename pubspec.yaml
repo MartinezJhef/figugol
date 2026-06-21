@@ -42,6 +42,9 @@ dependencies:
   provider: ^6.1.5+1
   qr_flutter: ^4.1.0
   mobile_scanner: ^7.2.0
+  image_picker: ^1.2.1
+  share_plus: ^12.0.2
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +56,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -66,8 +71,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/stickers/uruguay/
-    - assets/stickers/uzbekistan/
+    - assets/images/
+    - assets/paises/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -99,3 +104,18 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/images/logo.png"
+  min_sdk_android: 21
+
+flutter_native_splash:
+  color: "#ffffff"
+  background_image: "assets/images/app_bg.png"
+  image: "assets/images/logo.png"
+  android_12:
+    image: "assets/images/logo.png"
+    icon_background_color: "#ffffff"

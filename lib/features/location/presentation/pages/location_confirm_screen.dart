@@ -124,9 +124,20 @@ class _LocationConfirmView extends StatelessWidget {
       if (!context.mounted) {
         return;
       }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      final isLocationDisabled = message.contains('Activa la ubicación');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          action: isLocationDisabled
+              ? SnackBarAction(
+                  label: 'Ajustes',
+                  onPressed: () => controller.openLocationSettings(),
+                )
+              : null,
+          duration: const Duration(seconds: 4),
+        ),
+      );
       controller.clearError();
     });
   }
@@ -178,7 +189,7 @@ class _LocationPreview extends StatelessWidget {
                 Text(
                   latitude == null || longitude == null
                       ? 'Actualiza tu ubicación para calcular tu zona de intercambio.'
-                      : 'Latitud: ${latitude.toStringAsFixed(5)}\nLongitud: ${longitude.toStringAsFixed(5)}\nZona: $sector\nRadio cercano: 5 km',
+                      : 'Sector de intercambio: $sector\nRadio de alcance: 5 km',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: const Color(0xFF6B7280),
                     height: 1.4,

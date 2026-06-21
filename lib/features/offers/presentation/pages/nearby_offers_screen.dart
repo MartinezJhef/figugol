@@ -106,13 +106,13 @@ class _NearbyEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: AppTheme.primaryRed, size: 58),
+            Icon(icon, color: AppTheme.primaryBrand, size: 58),
             const SizedBox(height: 14),
             Text(
               title,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppTheme.darkText,
+                color: AppTheme.lightText,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -168,7 +168,7 @@ class _NearbyOfferCard extends StatelessWidget {
                   child: Text(
                     offer.ownerName,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppTheme.darkText,
+                      color: AppTheme.lightText,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -216,7 +216,7 @@ class _OfferMeta extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppTheme.primaryRed),
+        Icon(icon, size: 18, color: AppTheme.primaryBrand),
         const SizedBox(width: 8),
         Expanded(
           child: Text(

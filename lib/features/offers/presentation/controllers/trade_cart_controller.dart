@@ -28,11 +28,11 @@ class TradeCartController extends ChangeNotifier {
   int quantityFor(String stickerId) => _items[stickerId]?.quantity ?? 0;
 
   bool canAddSticker({required String stickerId, required int ownedQuantity}) {
-    return ownedQuantity > 1 && quantityFor(stickerId) < ownedQuantity - 1;
+    return ownedQuantity > 0 && quantityFor(stickerId) < ownedQuantity;
   }
 
   void addSticker({required Sticker sticker, required int ownedQuantity}) {
-    if (ownedQuantity <= 1) {
+    if (ownedQuantity <= 0) {
       _validationMessage =
           'Solo puedes agregar figuritas repetidas al intercambio.';
       notifyListeners();
@@ -40,11 +40,11 @@ class TradeCartController extends ChangeNotifier {
     }
 
     final currentQuantity = quantityFor(sticker.id);
-    final maxOfferQuantity = ownedQuantity - 1;
+    final maxOfferQuantity = ownedQuantity;
 
     if (currentQuantity >= maxOfferQuantity) {
       _validationMessage =
-          'Debes conservar al menos 1 unidad para tu colección.';
+          'No tienes más stock disponible de esta figurita.';
       notifyListeners();
       return;
     }

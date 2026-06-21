@@ -6,12 +6,14 @@ class UserSticker {
     required this.stickerId,
     required this.quantity,
     required this.updatedAt,
+    this.isPasted = false,
   });
 
   final String userId;
   final String stickerId;
   final int quantity;
   final DateTime updatedAt;
+  final bool isPasted;
 
   factory UserSticker.fromJson(Map<String, dynamic> json) {
     return UserSticker(
@@ -19,6 +21,7 @@ class UserSticker {
       stickerId: json['stickerId'] as String,
       quantity: json['quantity'] as int? ?? 0,
       updatedAt: _readDateTime(json['updatedAt']),
+      isPasted: json['isPasted'] as bool? ?? false,
     );
   }
 
@@ -28,6 +31,7 @@ class UserSticker {
       'stickerId': stickerId,
       'quantity': quantity,
       'updatedAt': Timestamp.fromDate(updatedAt),
+      'isPasted': isPasted,
     };
   }
 
