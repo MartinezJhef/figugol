@@ -64,29 +64,27 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
                       return _OfferedStickerTile(item: item);
                     },
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 80), // Padding for FAB
                 ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: FilledButton.icon(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => ProposeTradeScreen(
-                        offer: widget.offer,
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.handshake_rounded),
-                label: const Text('Proponer intercambio'),
               ),
             ),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => ProposeTradeScreen(
+                offer: widget.offer,
+              ),
+            ),
+          );
+        },
+        icon: const Icon(Icons.handshake_rounded),
+        label: const Text('Proponer intercambio'),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       backgroundColor: AppTheme.bgDark,
     );
   }

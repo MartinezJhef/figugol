@@ -9,6 +9,7 @@ import '../../../offers/data/models/trade_offer.dart';
 import '../../../offers/data/repositories/trade_offers_repository.dart';
 import '../../../stickers/data/models/sticker.dart';
 import '../../../stickers/data/repositories/stickers_repository.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../data/models/user_qr_payload.dart';
 
 class ScanUserQrScreen extends StatefulWidget {
@@ -139,9 +140,9 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
   }
 
   Future<void> _executeExchange(AppUser currentUser) async {
-    if (_selectedToGive.isEmpty && _selectedToReceive.isEmpty) {
+    if (_selectedToGive.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debes seleccionar al menos una figurita.')),
+        const SnackBar(content: Text('Tienes que ofrecer al menos una figurita')),
       );
       return;
     }
@@ -202,7 +203,7 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
     final user = context.watch<AuthController>().user;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppTheme.bgDark,
       appBar: AppBar(
         title: const Text('Escanear QR'),
         actions: [
@@ -276,7 +277,7 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
                 'Intercambio con ${_scannedUser!.userName}',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF111827),
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 24),
@@ -303,9 +304,9 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
               const SizedBox(height: 12),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppTheme.cardDark,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey[200]!),
+                  border: Border.all(color: Colors.white12),
                 ),
                 child: Row(
                   children: [
@@ -315,18 +316,18 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: !_isVirtual ? const Color(0xFF0A369D).withValues(alpha: 0.1) : Colors.transparent,
+                            color: !_isVirtual ? AppTheme.primaryBrand.withValues(alpha: 0.1) : Colors.transparent,
                             borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
-                            border: Border(right: BorderSide(color: Colors.grey[200]!)),
+                            border: const Border(right: BorderSide(color: Colors.white12)),
                           ),
                           child: Column(
                             children: [
                               Icon(Icons.handshake_rounded, 
-                                color: !_isVirtual ? const Color(0xFF0A369D) : Colors.grey),
+                                color: !_isVirtual ? AppTheme.primaryBrand : Colors.white54),
                               const SizedBox(height: 4),
                               Text('Presencial', 
                                 style: TextStyle(
-                                  color: !_isVirtual ? const Color(0xFF0A369D) : Colors.grey,
+                                  color: !_isVirtual ? AppTheme.primaryBrand : Colors.white54,
                                   fontWeight: FontWeight.bold,
                                 )),
                             ],
@@ -340,17 +341,17 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: _isVirtual ? const Color(0xFF0A369D).withValues(alpha: 0.1) : Colors.transparent,
+                            color: _isVirtual ? AppTheme.primaryBrand.withValues(alpha: 0.1) : Colors.transparent,
                             borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
                           ),
                           child: Column(
                             children: [
                               Icon(Icons.chat_bubble_rounded, 
-                                color: _isVirtual ? const Color(0xFF0A369D) : Colors.grey),
+                                color: _isVirtual ? AppTheme.primaryBrand : Colors.white54),
                               const SizedBox(height: 4),
                               Text('Virtual', 
                                 style: TextStyle(
-                                  color: _isVirtual ? const Color(0xFF0A369D) : Colors.grey,
+                                  color: _isVirtual ? AppTheme.primaryBrand : Colors.white54,
                                   fontWeight: FontWeight.bold,
                                 )),
                             ],
@@ -375,15 +376,9 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
         ),
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, -5),
-              ),
-            ],
+          decoration: const BoxDecoration(
+            color: AppTheme.bgDark,
+            border: Border(top: BorderSide(color: Colors.white12)),
           ),
           child: Column(
             children: [
@@ -392,11 +387,11 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
                 child: FilledButton.icon(
                   onPressed: _isProcessing ? null : () => _executeExchange(currentUser),
                   icon: _isProcessing 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Icon(Icons.check_circle_rounded),
-                  label: Text(_isProcessing ? 'Procesando...' : 'Realizar Intercambio'),
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
+                      : const Icon(Icons.check_circle_rounded, color: Colors.black),
+                  label: Text(_isProcessing ? 'Procesando...' : 'Realizar Intercambio', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF006847),
+                    backgroundColor: AppTheme.primaryBrand,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
@@ -430,32 +425,32 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
-        Text(subtitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+        Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: Colors.white)),
+        Text(subtitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white70)),
         const SizedBox(height: 12),
         if (stickers.isEmpty)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: AppTheme.cardDark,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(color: Colors.white12),
             ),
-            child: Text(emptyMessage, style: TextStyle(color: Colors.grey[600])),
+            child: Text(emptyMessage, style: const TextStyle(color: Colors.white54)),
           )
         else
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppTheme.cardDark,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey[200]!),
+              border: Border.all(color: Colors.white12),
             ),
             child: ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: stickers.length,
-              separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey[200]),
+              separatorBuilder: (_, __) => const Divider(height: 1, color: Colors.white12),
               itemBuilder: (context, index) {
                 final sticker = stickers[index];
                 final isSelected = selectedSet.contains(sticker.id);
@@ -470,12 +465,38 @@ class _ScanUserQrScreenState extends State<ScanUserQrScreen> {
                       }
                     });
                   },
-                  activeColor: const Color(0xFF0A369D),
-                  title: Text(sticker.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text('${sticker.team} • ${sticker.catalogCode}'),
-                  secondary: CircleAvatar(
-                    backgroundColor: Colors.grey[100],
-                    child: Text(sticker.catalogCode, style: TextStyle(color: Colors.grey[800], fontSize: 12)),
+                  activeColor: AppTheme.primaryBrand,
+                  checkColor: Colors.black,
+                  title: Text(sticker.name, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
+                  subtitle: Text('${sticker.team} • ${sticker.catalogCode}', style: const TextStyle(color: Colors.white70)),
+                  secondary: Container(
+                    width: 40,
+                    height: 56,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      color: AppTheme.bgDark,
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.white12),
+                    ),
+                    child: (sticker.imageUrl != null)
+                        ? (sticker.imageUrl!.startsWith('http')
+                            ? Image.network(
+                                sticker.imageUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 20, color: Colors.white24),
+                              )
+                            : Image.asset(
+                                sticker.imageUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 20, color: Colors.white24),
+                              ))
+                        : Center(
+                            child: Text(
+                              sticker.catalogCode,
+                              style: const TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                   ),
                 );
               },

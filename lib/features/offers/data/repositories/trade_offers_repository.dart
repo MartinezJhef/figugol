@@ -549,10 +549,10 @@ class TradeOffersRepository {
     return _firestore
         .collection('tradeNotifications')
         .where('toUserId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
+        // Se remueve orderBy para evitar error de índice compuesto faltante en Firestore
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) {
+          final list = snapshot.docs.map((doc) {
             final data = doc.data();
             // serverTimestamp might be null while pending, handle it gracefully
             if (data['createdAt'] == null) {
@@ -560,6 +560,9 @@ class TradeOffersRepository {
             }
             return TradeNotification.fromJson(data);
           }).toList();
+          
+          list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return list;
         });
   }
 

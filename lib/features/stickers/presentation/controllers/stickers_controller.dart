@@ -503,10 +503,17 @@ class StickersController extends ChangeNotifier {
     );
   }
 
+  Set<String> get selectedStickerIds => _selectedStickerIds;
+
   void toggleSelected(String stickerId) {
     if (!_selectedStickerIds.add(stickerId)) {
       _selectedStickerIds.remove(stickerId);
     }
+    notifyListeners();
+  }
+
+  void clearSelection() {
+    _selectedStickerIds.clear();
     notifyListeners();
   }
 
@@ -532,6 +539,33 @@ class StickersController extends ChangeNotifier {
 
   Future<void> togglePasteSticker(String stickerId) async {
     await _saveStickerState(stickerId, quantityFor(stickerId), !isPasted(stickerId));
+  }
+
+  Future<void> fillTeam(String team) async {
+    final teamStickers = stickers.where((s) => s.team == team).toList();
+    final futures = <Future<void>>[];
+    for (final sticker in teamStickers) {
+      final q = quantityFor(sticker.id);
+      final p = isPasted(sticker.id);
+      if (q == 0 || !p) {
+        final nextQ = q == 0 ? 1 : q;
+        futures.add(_saveStickerState(sticker.id, nextQ, true));
+      }
+    }
+    await Future.wait(futures);
+  }
+
+  Future<void> clearTeam(String team) async {
+    final teamStickers = stickers.where((s) => s.team == team).toList();
+    final futures = <Future<void>>[];
+    for (final sticker in teamStickers) {
+      final q = quantityFor(sticker.id);
+      final p = isPasted(sticker.id);
+      if (q > 0 || p) {
+        futures.add(_saveStickerState(sticker.id, 0, false));
+      }
+    }
+    await Future.wait(futures);
   }
 
   void clearError() {

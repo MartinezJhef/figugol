@@ -25,10 +25,18 @@ Color _accentTextColor(Color color) {
 }
 
 class StickersScreen extends StatelessWidget {
-  const StickersScreen({super.key});
+  final StickerFilter initialFilter;
+
+  const StickersScreen({super.key, this.initialFilter = StickerFilter.all});
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.read<StickersController>();
+    if (controller.filter != initialFilter) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.setFilter(initialFilter);
+      });
+    }
     return const _StickersView();
   }
 }
@@ -50,20 +58,21 @@ class _StickersView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Mis figuritas'),
         actions: [
-          _CartCounterButton(
-            totalItems: cart.totalItems,
-            onPressed: () {
-              final stickersController = context.read<StickersController>();
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => ChangeNotifierProvider.value(
-                    value: stickersController,
-                    child: const TradeCartScreen(),
+          if (controller.filter != StickerFilter.duplicates)
+            _CartCounterButton(
+              totalItems: cart.totalItems,
+              onPressed: () {
+                final stickersController = context.read<StickersController>();
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: stickersController,
+                      child: const TradeCartScreen(),
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
           if (controller.isSaving)
             const Padding(
               padding: EdgeInsets.only(right: 16),
@@ -85,6 +94,55 @@ class _StickersView extends StatelessWidget {
             ),
         ],
       ),
+      floatingActionButton: (controller.selectedSectionId != StickersController.allSectionId)
+          ? FloatingActionButton.extended(
+              heroTag: 'add_fab',
+              onPressed: () {
+                final selected = controller.selectedStickerIds;
+                final listToAdd = selected.isEmpty
+                    ? controller.visibleStickers
+                    : controller.visibleStickers
+                        .where((s) => selected.contains(s.id))
+                        .toList();
+
+                if (listToAdd.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No hay repetidas para agregar')),
+                  );
+                  return;
+                }
+
+                int added = 0;
+                for (final sticker in listToAdd) {
+                  final owned = controller.quantityFor(sticker.id);
+                  if (cart.canAddSticker(stickerId: sticker.id, ownedQuantity: owned)) {
+                    cart.addSticker(sticker: sticker, ownedQuantity: owned);
+                    added++;
+                  }
+                }
+
+                if (added > 0) {
+                  controller.clearSelection();
+                }
+
+                final stickersController = context.read<StickersController>();
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: stickersController,
+                      child: const TradeCartScreen(),
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.swap_horiz_rounded),
+              label: Text(
+                controller.selectedStickerIds.isEmpty
+                    ? 'Agregar al Intercambio'
+                    : 'Agregar seleccionadas al Intercambio',
+              ),
+            )
+          : null,
       body: !controller.isCatalogLoaded
           ? const Center(child: CircularProgressIndicator())
           : SafeArea(
@@ -110,12 +168,6 @@ class _StickersView extends StatelessWidget {
                       onChanged: controller.setSection,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  if (controller.selectedSectionId != StickersController.allSectionId || controller.filter != StickerFilter.all)
-                    _StickerFilterMenu(
-                      selectedFilter: controller.filter,
-                      onChanged: controller.setFilter,
-                    ),
                 ],
               ),
             ),
@@ -128,7 +180,7 @@ class _StickersView extends StatelessWidget {
                 ),
               ),
             Expanded(
-              child: (controller.selectedSectionId == StickersController.allSectionId && controller.searchQuery.isEmpty && controller.filter == StickerFilter.all)
+              child: (controller.selectedSectionId == StickersController.allSectionId && controller.searchQuery.isEmpty)
                 ? countriesList.isEmpty
                     ? const Center(child: Text('No se encontraron países.'))
                     : GridView.builder(
@@ -169,16 +221,10 @@ class _StickersView extends StatelessWidget {
                           section: controller.sectionForTeam(sticker.team),
                           isSelected: controller.isSelected(sticker.id),
                           onTap: () => controller.toggleSelected(sticker.id),
-                          onDoubleTap: () =>
+                          onIncrement: () =>
                               controller.incrementQuantity(sticker.id),
                           onDecrement: () =>
                               controller.decrementQuantity(sticker.id),
-                          onAddToTrade: () {
-                            cart.addSticker(
-                              sticker: sticker,
-                              ownedQuantity: controller.quantityFor(sticker.id),
-                            );
-                          },
                         );
                       },
                     ),
@@ -414,9 +460,8 @@ class _StickerCard extends StatelessWidget {
     required this.section,
     required this.isSelected,
     required this.onTap,
-    required this.onDoubleTap,
+    required this.onIncrement,
     required this.onDecrement,
-    required this.onAddToTrade,
   });
 
   final Sticker sticker;
@@ -425,12 +470,10 @@ class _StickerCard extends StatelessWidget {
   final StickerAlbumSection section;
   final bool isSelected;
   final VoidCallback onTap;
-  final VoidCallback onDoubleTap;
+  final VoidCallback onIncrement;
   final VoidCallback onDecrement;
-  final VoidCallback onAddToTrade;
 
   bool get _isMissing => quantity == 0;
-  bool get _canAddToTrade => quantity > 0 && cartQuantity < quantity;
 
   @override
   Widget build(BuildContext context) {
@@ -438,7 +481,7 @@ class _StickerCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      onDoubleTap: onDoubleTap,
+      onDoubleTap: onIncrement,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
         decoration: BoxDecoration(
@@ -474,12 +517,14 @@ class _StickerCard extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-              child: Row(
-                children: [
-                  const Spacer(),
+              child: GestureDetector(
+                onDoubleTap: () {}, // Swallow double tap to prevent triggering the card's increment
+                child: Row(
+                  children: [
+                    const Spacer(),
                   IconButton.filled(
                     tooltip: 'Sumar figurita',
-                    onPressed: onDoubleTap,
+                    onPressed: onIncrement,
                     icon: const Icon(Icons.add_rounded, size: 18),
                     constraints: const BoxConstraints.tightFor(
                       width: 32,
@@ -506,7 +551,8 @@ class _StickerCard extends StatelessWidget {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -531,37 +577,6 @@ class _StickerCard extends StatelessWidget {
                     quantity: quantity,
                     color: section.primaryColor,
                     textColor: countryTextColor,
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF3F4F6), // Fondo claro
-                      borderRadius: BorderRadius.circular(22),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: TextButton(
-                      onPressed: _canAddToTrade ? onAddToTrade : null,
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.black87,
-                        disabledForegroundColor: Colors.black45,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(22),
-                        ),
-                        textStyle: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      child: const Text('Agregar al intercambio'),
-                    ),
                   ),
                 ],
               ),

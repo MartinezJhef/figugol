@@ -127,12 +127,28 @@ class ShowUserQrScreen extends StatelessWidget {
       final painter = QrPainter(
         data: qrData,
         version: QrVersions.auto,
+        emptyColor: Colors.white,
         eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: Colors.black),
         dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Colors.black),
       );
 
-      final picture = painter.toPicture(300);
-      final image = await picture.toImage(300, 300);
+      const double qrSize = 300.0;
+      const double padding = 40.0;
+      const double totalSize = qrSize + (padding * 2);
+
+      final pictureRecorder = ui.PictureRecorder();
+      final canvas = Canvas(pictureRecorder);
+
+      // Fondo blanco con padding
+      final bgPaint = Paint()..color = Colors.white;
+      canvas.drawRect(const Rect.fromLTWH(0, 0, totalSize, totalSize), bgPaint);
+
+      // Dibujar QR en el centro
+      canvas.translate(padding, padding);
+      painter.paint(canvas, const Size(qrSize, qrSize));
+
+      final picture = pictureRecorder.endRecording();
+      final image = await picture.toImage(totalSize.toInt(), totalSize.toInt());
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final pngBytes = byteData!.buffer.asUint8List();
 
@@ -140,6 +156,7 @@ class ShowUserQrScreen extends StatelessWidget {
       final file = File('${tempDir.path}/mi_qr_figugol.png');
       await file.writeAsBytes(pngBytes);
 
+      // ignore: deprecated_member_use
       await Share.shareXFiles(
         [XFile(file.path)],
         text: '¡Escanea mi código QR de Figugol para intercambiar figuritas!',

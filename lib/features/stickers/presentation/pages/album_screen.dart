@@ -43,6 +43,7 @@ class _AlbumViewState extends State<_AlbumView> {
       appBar: AppBar(
         title: const Text('Mi Álbum'),
       ),
+      floatingActionButton: _buildAlbumFab(context, controller),
       body: Column(
         children: [
           // Banner Instructivo
@@ -140,6 +141,35 @@ class _AlbumViewState extends State<_AlbumView> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget? _buildAlbumFab(BuildContext context, StickersController controller) {
+    if (controller.selectedSectionId == StickersController.allSectionId) return null;
+    final team = controller.selectedSection.team;
+    if (team == null) return null;
+
+    final teamStickers = controller.visibleStickers;
+    if (teamStickers.isEmpty) return null;
+
+    final isFullyPasted = teamStickers.every((s) => controller.quantityFor(s.id) > 0 && controller.isPasted(s.id));
+
+    return FloatingActionButton.extended(
+      onPressed: () {
+        if (isFullyPasted) {
+          controller.clearTeam(team);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Se despegaron todos los stickers del país "${controller.selectedSection.label}"')),
+          );
+        } else {
+          controller.fillTeam(team);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Se pegó todos los stickers del país "${controller.selectedSection.label}"')),
+          );
+        }
+      },
+      icon: Icon(isFullyPasted ? Icons.clear_all_rounded : Icons.library_add_check_rounded),
+      label: Text(isFullyPasted ? 'Despegar Todo' : 'Pegar País'),
     );
   }
 }

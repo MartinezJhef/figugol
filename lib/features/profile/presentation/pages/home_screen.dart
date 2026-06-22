@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/services/connectivity_service.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/services/widget_service.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 
 import '../../../offers/presentation/pages/nearby_offers_screen.dart';
@@ -44,7 +45,14 @@ class HomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.grid_view_rounded, color: AppTheme.lightText, size: 28),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.widgets_rounded, color: AppTheme.primaryBrand, size: 28),
+                onPressed: () {
+                  WidgetService().requestPin(userId);
+                },
+              ),
               Text(
                 'Inicio',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(

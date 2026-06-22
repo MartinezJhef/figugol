@@ -22,8 +22,16 @@ class ProfileScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: AppTheme.secondaryBrand,
+                color: const Color(0xFF111827),
                 borderRadius: BorderRadius.circular(24),
+                image: DecorationImage(
+                  image: const AssetImage('assets/images/app_bg.png'),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    Colors.black.withValues(alpha: 0.6),
+                    BlendMode.darken,
+                  ),
+                ),
               ),
               child: Row(
                 children: [
@@ -37,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
                         ? const Icon(
                             Icons.person_rounded,
                             size: 38,
-                            color: AppTheme.secondaryBrand,
+                            color: Colors.black87,
                           )
                         : null,
                   ),

@@ -39,7 +39,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     final pages = [
       HomeScreen(onOpenTab: _selectTab),
-      const StickersScreen(),
+      const StickersScreen(initialFilter: StickerFilter.duplicates),
       const AlbumScreen(),
       const MarketplaceScreen(),
       const ProfileScreen(),

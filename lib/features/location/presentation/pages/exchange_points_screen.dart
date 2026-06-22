@@ -186,69 +186,72 @@ class _ExchangePointTile extends StatelessWidget {
     final borderColor = point.isSelected ? AppTheme.primaryBrand : const Color(0xFF374151);
     final iconColor = point.isSelected ? AppTheme.primaryBrand : const Color(0xFF6B7280);
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Ink(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: borderColor,
-            width: point.isSelected ? 2 : 1,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: borderColor,
+              width: point.isSelected ? 2 : 1,
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              _iconForType(point.type),
-              color: iconColor,
-              size: 30,
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    point.name,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: titleColor,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    point.description,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: subtitleColor,
-                      height: 1.3,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${point.latitude.toStringAsFixed(5)}, ${point.longitude.toStringAsFixed(5)}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: subtitleColor,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
+          child: Row(
+            children: [
+              Icon(
+                _iconForType(point.type),
+                color: iconColor,
+                size: 30,
               ),
-            ),
-            const SizedBox(width: 10),
-            Checkbox(
-              value: point.isSelected, 
-              onChanged: (_) => onTap(),
-              fillColor: WidgetStateProperty.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return AppTheme.primaryBrand;
-                }
-                return null;
-              }),
-            ),
-          ],
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      point.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: titleColor,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      point.description,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: subtitleColor,
+                        height: 1.3,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${point.latitude.toStringAsFixed(5)}, ${point.longitude.toStringAsFixed(5)}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: subtitleColor,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Checkbox(
+                value: point.isSelected, 
+                onChanged: (_) => onTap(),
+                fillColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return AppTheme.primaryBrand;
+                  }
+                  return null;
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );

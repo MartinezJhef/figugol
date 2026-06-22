@@ -298,17 +298,18 @@ class _ProposeTradeScreenState extends State<ProposeTradeScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 32),
-                FilledButton.icon(
-                  onPressed: _canSubmit ? _submitProposal : null,
-                  icon: const Icon(Icons.send_rounded),
-                  label: Text(
-                    _isSubmitting ? 'Enviando propuesta...' : 'Enviar propuesta',
-                  ),
-                ),
+                const SizedBox(height: 80), // Padding for FAB
               ],
             ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _canSubmit ? _submitProposal : null,
+        icon: const Icon(Icons.send_rounded),
+        label: Text(
+          _isSubmitting ? 'Enviando propuesta...' : 'Enviar propuesta',
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
