@@ -93,10 +93,10 @@ class _TradeCartScreenState extends State<TradeCartScreen> {
                                 final repository = TradeOffersRepository();
                                 final points = await repository.loadUserExchangePoints(user.uid);
                                 
-                                if (points.length != 3) {
+                                if (points.isEmpty) {
                                   if (!context.mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Necesitas configurar 3 puntos de intercambio en tu perfil.')),
+                                    const SnackBar(content: Text('Necesitas configurar al menos 1 punto de intercambio en tu perfil.')),
                                   );
                                   setState(() {
                                     _isPublishing = false;

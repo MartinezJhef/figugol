@@ -171,7 +171,7 @@ class _ValidationSummary extends StatelessWidget {
       if (!user.hasCompletedProfile) 'Completa tu nombre de intercambio.',
       if (!user.locationConfirmed || user.location == null)
         'Confirma tu ubicación.',
-      if (exchangePoints.length != 3) 'Selecciona 3 puntos de intercambio.',
+      if (exchangePoints.isEmpty) 'Selecciona al menos 1 punto de intercambio.',
       if (!cart.canPublish)
         'Debes seleccionar mínimo 6 figuritas para publicar una oferta.',
     ];

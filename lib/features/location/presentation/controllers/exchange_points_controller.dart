@@ -23,7 +23,6 @@ class ExchangePointsController extends ChangeNotifier {
     );
   }
 
-  static const maxSelectedPoints = 3;
 
   final String userId;
   final UserLocation location;
@@ -38,16 +37,12 @@ class ExchangePointsController extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isSaving => _isSaving;
   int get selectedCount => _points.where((point) => point.isSelected).length;
-  bool get canSave => selectedCount == maxSelectedPoints && !_isSaving;
+  bool get canSave => selectedCount >= 1 && !_isSaving;
 
   void togglePoint(String pointId) {
     final point = _points.firstWhere((item) => item.id == pointId);
 
-    if (!point.isSelected && selectedCount >= maxSelectedPoints) {
-      _errorMessage = 'Solo puedes seleccionar 3 puntos de intercambio.';
-      notifyListeners();
-      return;
-    }
+
 
     _points = [
       for (final item in _points)
@@ -65,8 +60,8 @@ class ExchangePointsController extends ChangeNotifier {
         .where((point) => point.isSelected)
         .toList(growable: false);
 
-    if (selectedPoints.length != maxSelectedPoints) {
-      _errorMessage = 'Selecciona 3 puntos para continuar.';
+    if (selectedPoints.isEmpty) {
+      _errorMessage = 'Selecciona al menos 1 punto para continuar.';
       notifyListeners();
       return false;
     }

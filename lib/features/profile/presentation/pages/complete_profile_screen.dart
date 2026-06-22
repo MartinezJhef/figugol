@@ -60,13 +60,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/auth_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
+
           
           // Back/Logout Button
           Positioned(
@@ -86,6 +80,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             right: 0,
             child: Column(
               children: [
+                Image.asset('assets/images/logo.png', height: 180),
+                const SizedBox(height: 20),
                 Text(
                   'Falta poco...',
                   style: textTheme.displaySmall?.copyWith(
@@ -93,6 +89,17 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     fontWeight: FontWeight.w400,
                     letterSpacing: 1.2,
                   ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(width: 24, height: 3, color: Theme.of(context).colorScheme.onSurface),
+                    const SizedBox(width: 8),
+                    Container(width: 6, height: 3, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.54)),
+                    const SizedBox(width: 8),
+                    Container(width: 6, height: 3, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.54)),
+                  ],
                 ),
               ],
             ),
@@ -103,9 +110,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             alignment: Alignment.bottomCenter,
             child: Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
                 ),
@@ -132,7 +139,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       'Elige tu nombre para intercambios.',
                       textAlign: TextAlign.center,
                       style: textTheme.bodyMedium?.copyWith(
-                        color: const Color(0xFF6B7280),
+                        color: Colors.grey.shade400,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -178,12 +185,12 @@ class _CustomTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.grey.shade600),
+        prefixIcon: Icon(icon, color: Colors.grey.shade400),
         hintText: hintText,
-        hintStyle: TextStyle(color: Colors.grey.shade400),
+        hintStyle: TextStyle(color: Colors.grey.shade500),
         filled: false,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFFE5E7EB)),
+          borderSide: BorderSide(color: AppTheme.borderLine),
         ),
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: AppTheme.accentBrand, width: 2),

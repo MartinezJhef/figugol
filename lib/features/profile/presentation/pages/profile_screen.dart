@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../../location/presentation/pages/exchange_points_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -80,6 +81,7 @@ class ProfileScreen extends StatelessWidget {
               icon: Icons.handshake_rounded,
               label: 'Nombre de intercambio',
               value: user?.exchangeName ?? 'Pendiente',
+              onTap: () => _showEditNameDialog(context, authController, user?.exchangeName ?? ''),
             ),
             _ProfileRow(
               icon: Icons.location_on_rounded,
@@ -89,7 +91,14 @@ class ProfileScreen extends StatelessWidget {
             _ProfileRow(
               icon: Icons.add_location_alt_rounded,
               label: 'Puntos seleccionados',
-              value: '${user?.selectedExchangePoints.length ?? 0} de 3',
+              value: '${user?.selectedExchangePoints.length ?? 0} punto(s)',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ExchangePointsScreen(),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 18),
             FilledButton.icon(
@@ -104,54 +113,103 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-}
 
+  void _showEditNameDialog(BuildContext context, AuthController authController, String currentName) {
+    final controller = TextEditingController(text: currentName);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: AppTheme.cardDark,
+          title: const Text('Editar nombre', style: TextStyle(color: Colors.white)),
+          content: TextField(
+            controller: controller,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              hintText: 'Nuevo nombre',
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                final newName = controller.text.trim();
+                if (newName.length >= 3) {
+                  authController.completeProfile(newName);
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('El nombre debe tener al menos 3 caracteres.')),
+                  );
+                }
+              },
+              child: const Text('Guardar', style: TextStyle(color: AppTheme.primaryBrand)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
 class _ProfileRow extends StatelessWidget {
   const _ProfileRow({
     required this.icon,
     required this.label,
     required this.value,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
   final String value;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final content = Padding(
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        children: [
+          Icon(icon, color: AppTheme.primaryBrand),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: const Color(0xFF6B7280),
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppTheme.lightText,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (onTap != null)
+            const Icon(Icons.edit_rounded, color: Color(0xFF6B7280), size: 20),
+        ],
+      ),
+    );
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            Icon(icon, color: AppTheme.primaryBrand),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: const Color(0xFF6B7280),
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppTheme.lightText,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      clipBehavior: Clip.antiAlias,
+      child: onTap != null
+          ? InkWell(onTap: onTap, child: content)
+          : content,
     );
   }
 }

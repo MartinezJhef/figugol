@@ -641,9 +641,9 @@ class TradeOffersRepository {
         'Confirma tu ubicación antes de publicar una oferta.',
       );
     }
-    if (exchangePoints.length != 3) {
+    if (exchangePoints.isEmpty) {
       throw const TradeOfferException(
-        'Selecciona 3 puntos de intercambio antes de publicar.',
+        'Selecciona al menos 1 punto de intercambio antes de publicar.',
       );
     }
     final totalItems = cartItems.fold(
